@@ -1,0 +1,53 @@
+\documentclass[a4paper,12pt]{thesis-ekf}
+\usepackage[T1]{fontenc}
+\PassOptionsToPackage{defaults=hu-min}{magyar.ldf}
+\usepackage{fancyvrb,listingsutf8,xcolor,caption}
+\usepackage{fancyhdr,amsthm,amsmath,amssymb,listings}
+\usepackage{hyperref}
+\usepackage[magyar]{babel}
+\lstset{
+	inputencoding=utf8/latin2,
+	language=Delphi,
+	basicstyle=\footnotesize,
+	numbers=left,
+	breaklines,
+	postbreak=\hbox{$\color{red}\hookrightarrow\ $},
+	xleftmargin=2cm,
+	xrightmargin=2cm,
+	backgroundcolor=\color{gray!30},
+	frame=tlbr,
+	framesep=3pt,
+	keywordstyle=\bfseries\color{blue},
+	commentstyle=\itshape\color{teal}
+}
+\theoremstyle{definition}
+\newtheorem{definicio}{Definíció}[chapter]
+\DeclareMathOperator{\tg}{tg}
+\setlength{\headheight}{15pt}
+\renewcommand{\lstlistingname}{kód}
+
+\begin{document}
+	\institute{Matematikai és Informatikai Intézet}
+	\title{Webservice Menedzselhető Beléptetőrendszerhez}
+	\author{Dombi Tibor Dávid\\Programtervező Informatikus}
+	\supervisor{Tajti Tibor\\Egyetemi Docens}
+	\city{Eger}
+	\date{2021}
+	\maketitle
+	\tableofcontents
+	
+	\chapter*{Bevezetés}\label{ch-ThesisIntro}
+	Már egyetemi tanulmányaim előtt is legjobban a webes alkalmazások készítése foglalkoztatott, és ez az irány megmaradt végig a tanulmányaim során. Nem meglepő, hogy szakdolgozatomnak is ilyen témát választottam.
+	Az utolsó két évemben elkezdtem komolyabban foglalkozni az IoT eszközökkel, és mivel rendkívül érdekesnek találtam a témát, szerettem volna belevenni a szakdolgozatomba. Így született meg ez a projekt.
+	
+	Így született meg ez a dolgozati téma: Egy menedzselhető, online felületen elérhető beléptetőrendszer prototípusa. A feladat rendkívül aktuális, hisz minden cég szabályozza, hogy ki léphet be a telephelyére, illetve valamilyen módon követi, hogy dolgozói mikor érkeztek és távoztak. Ez a rendszer mindkét feladatot automatizálja.
+	
+	A projekt elkészítése alatt nagy hangsúlyt fektettem a költséghatékonyságra illetve arra, hogy minél felhasználóbarátabb legyen, mindezt úgy, hogy minden szükséges szolgáltatást megvalósítson.
+	
+	A piacon számtalan hasonló rendszert találni, de ezek mind rendkívül komplexek és költségesek, többnyire csak a szolgáltató szerelői tudják beszerelni és üzemben tartani, valamint alig-, vagy egyáltalán nem szabhatók személyre. A célom az volt, hogy a projekt megoldást kínáljon ezekre a problémákra. Itt megjegyezném, hogy a dolgozat csak a webservice-al foglalkozik, a hardveres feladatokkal nem, viszont biztosít egy általános interfészt, amihez bármilyen hardver komponenst csatolhatunk.
+	
+	A technológia kiválasztásánál az volt a célom, hogy minél általánosabb, és minél könnyebben hozzáférhető legyen. Az online elérés megvalósítására számtalan módszer van, de a legegyszerűbb, ha eleve az egész rendszer egy szerveren fut, és valamilyen webtechnológiával van megvalósítva. Ez magában hordozza azt az előnyt is, hogy így a program bármilyen platformról elérhető. Bár a PHP népszerűsége sokat zuhant az elmúlt években\footnote{Forrás: \url{https://octoverse.github.com/}}, még mindig az egyik legdominánsabb nyelv, ha szerver oldali programozásról van szó\footnote{Forrás: \url{https://w3techs.com/technologies/details/pl-php}}, így erre esett a választásom. 
+	
+	\chapter{Rendszer Bemutatása}\label{ch-SystemIntro}
+	
+\end{document}
