@@ -2,25 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\Validator;
-use App\Models\User;
 use Illuminate\Validation\ValidationException;
 
 
 class JwtAuthController extends Controller
 {
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
     /**
      * Get a JWT via given credentials.
+     * @param Request $request
+     * @return JsonResponse
+     * @throws ValidationException
      */
-    public function login(Request $request){
+    public function login(Request $request)
+    {
         $req = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|string|min:5',
@@ -30,11 +34,28 @@ class JwtAuthController extends Controller
             return response()->json($req->errors(), 422);
         }
 
-        if (! $token = auth()->attempt($req->validated())) {
+        if (!$token = auth()->attempt($req->validated())) {
             return response()->json(['Auth error' => 'Unauthorized'], 401);
         }
 
         return $this->generateToken($token);
+    }
+
+    /**
+     * Generate token
+     * @param $token
+     * @return JsonResponse
+     */
+    protected function generateToken($token)
+    {
+        /** @noinspection PhpUndefinedMethodInspection */
+        /** @noinspection PhpParamsInspection */
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60,
+            'user' => auth()->user()
+        ]);
     }
 
     /**
@@ -44,14 +65,15 @@ class JwtAuthController extends Controller
      * @return JsonResponse
      * @throws ValidationException
      */
-    public function register(Request $request) {
+    public function register(Request $request)
+    {
         $req = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|confirmed|min:6',
         ]);
 
-        if($req->fails()){
+        if ($req->fails()) {
             return response()->json($req->errors()->toJson(), 400);
         }
 
@@ -66,11 +88,11 @@ class JwtAuthController extends Controller
         ], 201);
     }
 
-
     /**
      * Sign out
      */
-    public function signout() {
+    public function signout()
+    {
         auth()->logout();
         return response()->json(['message' => 'User loged out']);
     }
@@ -78,26 +100,17 @@ class JwtAuthController extends Controller
     /**
      * Token refresh
      */
-    public function refresh() {
+    public function refresh()
+    {
+        /** @noinspection PhpPossiblePolymorphicInvocationInspection */
         return $this->generateToken(auth()->refresh());
     }
 
     /**
      * User
      */
-    public function user() {
+    public function profile()
+    {
         return response()->json(auth()->user());
-    }
-
-    /**
-     * Generate token
-     */
-    protected function generateToken($token){
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user()
-        ]);
     }
 }

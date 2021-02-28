@@ -11,11 +11,15 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 /**
  * @method static User first()
+ * @method static create(array $array_merge)
  */
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasFactory, Notifiable, HasRolesAndAbilities, UUID;
+    use HasFactory;
+    use HasRolesAndAbilities;
+    use Notifiable;
+    use UUID;
 
     protected $fillable = [
         'name',

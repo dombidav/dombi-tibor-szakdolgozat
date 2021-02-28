@@ -14,6 +14,7 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^8.12",
         "laravel/tinker": "^2.5",
+        "profclems/postman-collection-generator": "^1.2",
         "silber/bouncer": "v1.0.0-rc.10",
         "tymon/jwt-auth": "^1.0"
     },
