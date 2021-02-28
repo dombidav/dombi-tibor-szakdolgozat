@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -111,6 +113,6 @@ class JwtAuthController extends Controller
      */
     public function profile()
     {
-        return response()->json(auth()->user());
+        return UserResource::make(Auth::user());
     }
 }
