@@ -16,15 +16,7 @@ class UserRequest extends FormRequest
      */
     public function authorize()
     {
-        switch ($this->method){
-            case 'GET':
-                return Bouncer::can('view', User::class);
-            case 'POST':
-            case 'PUT':
-                return Bouncer::can('edit', User::class);
-            case 'DELETE':
-                return Bouncer::can('delete', User::class);
-        }
+        return request()->method === 'GET' || Bouncer::can('manage', User::class);
     }
 
     /**
@@ -34,8 +26,20 @@ class UserRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            //
-        ];
+        if(request()->method === 'DELETE'){
+            $rules = [];
+        }else{
+            $required = (request()->method === 'PUT') ? '' : 'required|';
+            $rules = [
+                'name' => "${required}min:3",
+                'email' => "${required}email|unique:users",
+                'password' => "${required}min:6",
+                'password_confirmation' => 'required_with:password|same:password'
+            ];
+            if(request()->method === 'PUT'){
+                $rules['old_password'] = 'required_with:password|password';
+            }
+        }
+        return $rules;
     }
 }
