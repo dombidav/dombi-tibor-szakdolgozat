@@ -11,7 +11,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 /**
  * @method static User first()
- * @method static create(array $array_merge)
+ * @method static User create(array $array_merge)
  */
 
 class User extends Authenticatable implements JWTSubject
