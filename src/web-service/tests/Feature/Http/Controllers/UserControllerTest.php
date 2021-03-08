@@ -156,4 +156,12 @@ class UserControllerTest extends TestCase
         $response = $this->actingAs($this->users['admin'])->delete(route('user.destroy', $this->users['admin']->id));
         $response->assertStatus(ResponseCode::HTTP_FORBIDDEN);
     }
+
+    public function testOthersCanNotDeleteUsers(){
+        $response = $this->actingAs($this->users['supervisor'])->delete(route('user.destroy', $this->users['guard']->id));
+        $response->assertStatus(ResponseCode::HTTP_FORBIDDEN);
+
+        $response = $this->actingAs($this->users['supervisor'])->delete(route('user.destroy', $this->users['supervisor']->id));
+        $response->assertStatus(ResponseCode::HTTP_FORBIDDEN);
+    }
 }
