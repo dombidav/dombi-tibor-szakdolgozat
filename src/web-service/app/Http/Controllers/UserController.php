@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Silber\Bouncer\BouncerFacade;
 use Symfony\Component\HttpFoundation\Response as ResponseCode;
 
 class UserController extends Controller
@@ -39,7 +40,7 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, User $user)
     {
-        if($request->has('password') && $user !== Auth::user()) {
+        if($request->has('password') && ($user->id !== Auth::user()->id)) {
             return response()->json(['message' => 'You can not change the password of another user'])->setStatusCode(ResponseCode::HTTP_FORBIDDEN);
         }
         $user->update($request->validated());
@@ -48,16 +49,17 @@ class UserController extends Controller
     }
 
     /**
-     * @param UserRequest $request
      * @param User $user
-     * @return UserResource
+     * @return JsonResponse
      * @throws Exception
-     * @noinspection PhpUnusedParameterInspection
      */
-    public function destroy(UserRequest $request, User $user)
+    public function destroy(User $user)
     {
-        $old = UserResource::make($user);
+        if($user->id === Auth::user()->id) {
+            return response()->json(['message' => 'You can not delete your own account'])->setStatusCode(ResponseCode::HTTP_FORBIDDEN);
+        }
+
         $user->delete();
-        return $old;
+        return response()->json('', ResponseCode::HTTP_NO_CONTENT);
     }
 }
