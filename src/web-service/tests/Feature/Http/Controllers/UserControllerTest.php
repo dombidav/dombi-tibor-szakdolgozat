@@ -59,10 +59,16 @@ class UserControllerTest extends TestCase
     public function testUserShow(){
         $expected = User::first();
 
+<<<<<<< HEAD
         foreach ($this->users as $user){
             $response = $this->actingAs($user)->getJson(route('user.show', ['user' => $expected->id]));
             $response->assertJsonStructure([
                 'data' => [
+=======
+        $response = $this->actingAs($this->users['admin'])->getJson(route('user.show', ['user' => $expected->id]));
+        $response->assertJsonStructure([
+            'data' => [
+>>>>>>> master
                     'id',
                     'name',
                     'email',
@@ -78,10 +84,16 @@ class UserControllerTest extends TestCase
                     'forbidden' => [
                         '*' => []
                     ]
+<<<<<<< HEAD
                 ]
             ]);
             $response->assertExactJson(['data' => UserResource::make($expected)->jsonSerialize()]);
         }
+=======
+            ]
+        ]);
+        $response->assertExactJson(['data' => UserResource::make($expected)->jsonSerialize()]);
+>>>>>>> master
     }
 
 }
