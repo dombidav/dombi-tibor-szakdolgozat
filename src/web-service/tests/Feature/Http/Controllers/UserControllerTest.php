@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response as ResponseCode;
 
 class UserControllerTest extends TestCase
 {
@@ -109,10 +109,10 @@ class UserControllerTest extends TestCase
             'password_confirmation' => $password
         ];
         $response = $this->actingAs($this->users['supervisor'])->post(route('user.store'), $user);
-        $response->assertStatus(Response::HTTP_FORBIDDEN);
+        $response->assertStatus(ResponseCode::HTTP_FORBIDDEN);
 
         $response = $this->actingAs($this->users['guard'])->post(route('user.store'), $user);
-        $response->assertStatus(Response::HTTP_FORBIDDEN);
+        $response->assertStatus(ResponseCode::HTTP_FORBIDDEN);
     }
 
     public function testAdminCanUpdateUser(){
@@ -121,6 +121,39 @@ class UserControllerTest extends TestCase
         ];
         $expected = User::latest()->first();
         $response = $this->actingAs($this->users['admin'])->put(route('user.update', $expected->id), $user);
-        $response->assertStatus(Response::HTTP_NO_CONTENT);
+        $response->assertStatus(ResponseCode::HTTP_NO_CONTENT);
+    }
+
+    public function testAdminCanOnlyUpdateOwnPassword(){
+        $data = [
+            'password' => 'updated_secret',
+            'password_confirmation' => 'updated_secret',
+            'old_password' => 'secret'
+        ];
+        $response = $this->actingAs($this->users['admin'])->put(route('user.update', $this->users['admin']->id), $data);
+        $response->assertStatus(ResponseCode::HTTP_NO_CONTENT);
+
+        $response = $this->actingAs($this->users['admin'])->put(route('user.update', $this->users['supervisor']->id), $data);
+        $response->assertStatus(ResponseCode::HTTP_FORBIDDEN);
+    }
+
+    public function testOthersCanNotUpdateUsers(){
+        $user = [
+            'name' => 'Updated User'
+        ];
+        $expected = User::latest()->first();
+        $response = $this->actingAs($this->users['supervisor'])->put(route('user.update', $expected->id), $user);
+        $response->assertStatus(ResponseCode::HTTP_FORBIDDEN);
+
+        $response = $this->actingAs($this->users['guard'])->put(route('user.update', $expected->id), $user);
+        $response->assertStatus(ResponseCode::HTTP_FORBIDDEN);
+    }
+
+    public function testAdminCanDeleteUsers(){
+        $response = $this->actingAs($this->users['admin'])->delete(route('user.destroy', $this->users['supervisor']->id));
+        $response->assertStatus(ResponseCode::HTTP_NO_CONTENT);
+
+        $response = $this->actingAs($this->users['admin'])->delete(route('user.destroy', $this->users['admin']->id));
+        $response->assertStatus(ResponseCode::HTTP_FORBIDDEN);
     }
 }
