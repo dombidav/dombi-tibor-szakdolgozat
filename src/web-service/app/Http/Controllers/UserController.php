@@ -41,7 +41,7 @@ class UserController extends Controller
     public function update(UserRequest $request, User $user)
     {
         if($request->has('password') && ($user->id !== Auth::user()->id)) {
-            return response()->json(['message' => 'You can not change the password of another user'])->setStatusCode(ResponseCode::HTTP_FORBIDDEN);
+            return response()->json(['message' => 'You can not change the password of another user'], ResponseCode::HTTP_FORBIDDEN);
         }
         $user->update($request->validated());
         $user->save();
@@ -55,10 +55,12 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        if($user->id === Auth::user()->id) {
-            return response()->json(['message' => 'You can not delete your own account'])->setStatusCode(ResponseCode::HTTP_FORBIDDEN);
+        if(!BouncerFacade::can('manage', User::class)) {
+            return response()->json(['message' => 'You can not delete any user'], ResponseCode::HTTP_FORBIDDEN);
         }
-
+        if($user->id === Auth::user()->id) {
+            return response()->json(['message' => 'You can not delete your own account'], ResponseCode::HTTP_FORBIDDEN);
+        }
         $user->delete();
         return response()->json('', ResponseCode::HTTP_NO_CONTENT);
     }
