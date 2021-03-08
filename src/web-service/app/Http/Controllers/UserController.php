@@ -24,7 +24,7 @@ class UserController extends Controller
         $validated = $request->except('password_confirmation');
         $validated['password'] = Hash::make($validated['password']);
         $user = User::create($validated);
-        return response(UserResource::make($user))->setStatusCode(201);
+        return response(UserResource::make($user))->setStatusCode(ResponseCode::HTTP_CREATED);
     }
 
     public function show(User $user)
@@ -44,7 +44,7 @@ class UserController extends Controller
         }
         $user->update($request->validated());
         $user->save();
-        return response()->setStatusCode(ResponseCode::HTTP_NO_CONTENT);
+        return response()->json('', ResponseCode::HTTP_NO_CONTENT);
     }
 
     /**
