@@ -115,4 +115,12 @@ class UserControllerTest extends TestCase
         $response->assertStatus(Response::HTTP_FORBIDDEN);
     }
 
+    public function testAdminCanUpdateUser(){
+        $user = [
+            'name' => 'Updated User'
+        ];
+        $expected = User::latest()->first();
+        $response = $this->actingAs($this->users['admin'])->put(route('user.update', $expected->id), $user);
+        $response->assertStatus(Response::HTTP_NO_CONTENT);
+    }
 }
