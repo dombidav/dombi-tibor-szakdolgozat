@@ -8,8 +8,8 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
-use Tests\Actor;
 use Tests\TestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserControllerTest extends TestCase
 {
@@ -98,6 +98,21 @@ class UserControllerTest extends TestCase
             'name' => 'Test User',
             'email' => 'test@test.test'
         ]);
+    }
+
+    public function testOthersCanNotCreateUsers(){
+        $password = Hash::make('secret');
+        $user = [
+            'name' => 'Test User',
+            'email' => 'test@test.test',
+            'password' => $password,
+            'password_confirmation' => $password
+        ];
+        $response = $this->actingAs($this->users['supervisor'])->post(route('user.store'), $user);
+        $response->assertStatus(Response::HTTP_FORBIDDEN);
+
+        $response = $this->actingAs($this->users['guard'])->post(route('user.store'), $user);
+        $response->assertStatus(Response::HTTP_FORBIDDEN);
     }
 
 }
