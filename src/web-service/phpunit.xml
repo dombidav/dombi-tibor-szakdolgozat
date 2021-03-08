@@ -11,9 +11,25 @@
     </testsuites>
     <coverage processUncoveredFiles="true">
         <include>
-            <directory suffix=".php">./app</directory>
+            <!-- Included directories -->
+
+            <directory suffix=".php">./app/Http/Controllers</directory>
+            <directory suffix=".php">./app/Utils</directory>
         </include>
         <exclude>
+            <!-- Excluded directories -->
+
+            <file>./app/Http/Middleware/VerifyCsrfToken.php</file>
+            <file>./app/Http/Middleware/TrustProxies.php</file>
+            <file>./app/Http/Middleware/TrustHosts.php</file>
+            <file>./app/Http/Middleware/TrimStrings.php</file>
+            <file>./app/Http/Middleware/RedirectIfAuthenticated.php</file>
+            <file>./app/Http/Middleware/PreventRequestsDuringMaintenance.php</file>
+            <file>./app/Http/Middleware/EncryptCookies.php</file>
+            <file>./app/Http/Middleware/Authenticate.php</file>
+            <file>./app/Http/Controllers/Controller.php</file>
+
+            <directory>./app/Exceptions</directory>
             <directory>./app/Console</directory>
         </exclude>
     </coverage>
