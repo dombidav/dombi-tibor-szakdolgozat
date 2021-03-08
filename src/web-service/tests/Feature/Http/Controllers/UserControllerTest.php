@@ -91,7 +91,7 @@ class UserControllerTest extends TestCase
             'name' => 'Test User',
             'email' => 'test@test.test',
             'password' => $password,
-            ////'password_confirmation' => $password
+            'password_confirmation' => $password
         ]);
 
         $response->assertJsonFragment([
