@@ -45,7 +45,9 @@ jobs:
             testbench: 6.*
  
     name: P${{ matrix.php-versions }} - L${{ matrix.laravel }} - ${{ matrix.dependency-stability }} - ${{ matrix.operating-system}}
- 
+    defaults:
+      run:
+        working-directory: src/web-services
     steps:
     - uses: actions/checkout@v2
     - name: Setup Node.js
