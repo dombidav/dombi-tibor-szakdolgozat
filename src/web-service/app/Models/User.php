@@ -13,7 +13,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 /**
  * @method static User first()
  * @method static User create(array $array_merge)
- * @method static Builder where(string $string, string $string1)
+ * @method static Builder where(string $field, string $operator, string $value=null)
  * @method static Builder latest()
  */
 
