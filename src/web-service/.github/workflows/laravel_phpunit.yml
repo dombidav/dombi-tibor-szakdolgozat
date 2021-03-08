@@ -1,4 +1,4 @@
-	# GithHub Actions Workflow generated with Ghygen
+# GithHub Actions Workflow generated with Ghygen
 # Original configuration: https://ghygen.hi-folks.dev?code=707da53f3262b44eb577900461ed9d0b
 name: Test Laravel Github action
 on:
@@ -72,7 +72,7 @@ jobs:
       id: composer-cache
       run: |
         echo "::set-output name=dir::$(composer config cache-files-dir)"
-     - uses: actions/cache@v2
+    - uses: actions/cache@v2
       id: actions-cache
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
