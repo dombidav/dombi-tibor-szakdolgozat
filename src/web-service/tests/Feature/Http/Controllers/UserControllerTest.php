@@ -3,6 +3,7 @@
 namespace Http\Controllers;
 
 use App\Http\Controllers\UserController;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
@@ -53,6 +54,32 @@ class UserControllerTest extends TestCase
                 ]
             ]);
         }
+    }
+
+    public function testUserShow(){
+        $expected = User::first();
+
+        $response = $this->actingAs($this->users['admin'])->getJson(route('user.show', ['user' => $expected->id]));
+        $response->assertJsonStructure([
+            'data' => [
+                    'id',
+                    'name',
+                    'email',
+                    'email_verified_at',
+                    'created_at',
+                    'updated_at',
+                    'roles' => [
+                        '*' => []
+                    ],
+                    'abilities' => [
+                        '*' => []
+                    ],
+                    'forbidden' => [
+                        '*' => []
+                    ]
+            ]
+        ]);
+        $response->assertExactJson(['data' => UserResource::make($expected)->jsonSerialize()]);
     }
 
 }
