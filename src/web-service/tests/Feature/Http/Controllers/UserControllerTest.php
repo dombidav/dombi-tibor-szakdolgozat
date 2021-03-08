@@ -7,6 +7,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Hash;
 use Tests\Actor;
 use Tests\TestCase;
 
@@ -82,6 +83,21 @@ class UserControllerTest extends TestCase
             ]);
             $response->assertExactJson(['data' => UserResource::make($expected)->jsonSerialize()]);
         }
+    }
+
+    public function testAdminCanCreateUsers(){
+        $password = Hash::make('secret');
+        $response = $this->actingAs($this->users['admin'])->post(route('user.store'), [
+            'name' => 'Test User',
+            'email' => 'test@test.test',
+            'password' => $password,
+            'password_confirmation' => $password
+        ]);
+
+        $response->assertJsonFragment([
+            'name' => 'Test User',
+            'email' => 'test@test.test'
+        ]);
     }
 
 }
