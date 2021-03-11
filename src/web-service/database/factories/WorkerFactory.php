@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Worker;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class WorkerFactory extends Factory
 {
@@ -22,7 +23,10 @@ class WorkerFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'name' => $this->faker->name,
+            'birthdate' => $this->faker->dateTime,
+            'rfid' => Str::random(),
+            'telephone' => $this->faker->phoneNumber
         ];
     }
 }

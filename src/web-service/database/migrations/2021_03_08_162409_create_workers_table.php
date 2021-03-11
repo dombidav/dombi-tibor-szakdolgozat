@@ -15,6 +15,10 @@ class CreateWorkersTable extends Migration
     {
         Schema::create('workers', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('rfid')->nullable();
+            $table->date('birthdate');
+            $table->string('telephone')->nullable();
             $table->timestamps();
         });
     }
