@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Exception;
@@ -34,11 +35,11 @@ class UserController extends Controller
     }
 
     /**
-     * @param UserRequest $request
+     * @param UserUpdateRequest $request
      * @param User $user
      * @return JsonResponse|object
      */
-    public function update(UserRequest $request, User $user)
+    public function update(UserUpdateRequest $request, User $user)
     {
         if($request->has('password') && ($user->id !== Auth::user()->id)) {
             return response()->json(['message' => 'You can not change the password of another user'], ResponseCode::HTTP_FORBIDDEN);
