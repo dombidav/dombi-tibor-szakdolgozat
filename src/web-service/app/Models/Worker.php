@@ -12,5 +12,5 @@ class Worker extends Model
     use HasFactory;
     use ApiResource;
 
-    
+
 }
