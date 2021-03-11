@@ -18,7 +18,7 @@ abstract class TestCase extends BaseTestCase {
     use CreatesApplication;
     use DatabaseMigrations;
 
-    private Generator $faker;
+    protected Generator $faker;
 
     /** @var User[] $users */
     protected array $users;
