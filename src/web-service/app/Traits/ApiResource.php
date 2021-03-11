@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static int count()
  * @method static Builder latest()
  * @method static Builder inRandomOrder()
+ * @method static Model create(array $validated)
  */
 
 trait ApiResource
