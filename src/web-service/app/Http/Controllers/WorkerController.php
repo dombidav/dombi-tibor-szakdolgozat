@@ -39,14 +39,6 @@ class WorkerController extends Controller
 
     public function destroy(Worker $worker): JsonResponse
     {
-        if(!Bouncer::can('manage', Worker::class)){
-            return response()->json(['message' => 'You can not delete any workers'], ResponseCode::HTTP_FORBIDDEN);
-        }
-        try {
-            $worker->delete();
-        } catch (Exception $e) {
-            response()->json($e, 500);
-        }
-        return response()->json('', ResponseCode::HTTP_NO_CONTENT);
+        return Bouncer::TryDelete(Worker::class, $worker);
     }
 }
