@@ -2,84 +2,49 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\WorkerRequest;
+use App\Http\Requests\WorkerUpdateRequest;
+use App\Http\Resources\WorkerResource;
 use App\Models\Worker;
-use Illuminate\Http\Request;
+use Exception;
+use Silber\Bouncer\BouncerFacade;
+use Symfony\Component\HttpFoundation\Response as ResponseCode;
 
 class WorkerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        //
+        return WorkerResource::collection(Worker::all());
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function store(WorkerRequest $request)
     {
-        //
+        $worker = Worker::create($request->validated());
+        return response(WorkerResource::make($worker), ResponseCode::HTTP_CREATED);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Worker  $worker
-     * @return \Illuminate\Http\Response
-     */
     public function show(Worker $worker)
     {
-        //
+        return WorkerResource::make($worker);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Worker  $worker
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Worker $worker)
+    public function update(WorkerUpdateRequest $request, Worker $worker)
     {
-        //
+        $worker->update($request->validated());
+        $worker->save();
+        return response()->json('', ResponseCode::HTTP_NO_CONTENT);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Worker  $worker
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Worker $worker)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Worker  $worker
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Worker $worker)
     {
-        //
+        if(!BouncerFacade::can('manage', Worker::class)){
+            return response()->json(['message' => 'You can not delete any workers'], ResponseCode::HTTP_FORBIDDEN);
+        }
+        try {
+            $worker->delete();
+        } catch (Exception $e) {
+            response()->json($e, 500);
+        }
+        return response()->json('', ResponseCode::HTTP_NO_CONTENT);
     }
 }
