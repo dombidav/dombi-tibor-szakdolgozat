@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpInconsistentReturnPointsInspection */
 
 namespace App\Http\Middleware;
 
@@ -12,6 +12,7 @@ class Authenticate extends Middleware
      *
      * @param  Request  $request
      * @return string|null
+     * @noinspection PhpMissingParamTypeInspection
      */
     protected function redirectTo($request)
     {

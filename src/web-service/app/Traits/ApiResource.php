@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder latest()
  * @method static Builder inRandomOrder()
  * @method static Model create(array $validated)
+ * @method static Builder where(string $field, mixed $operatorOrEqualsValue, mixed $value = null)
  */
 
 trait ApiResource

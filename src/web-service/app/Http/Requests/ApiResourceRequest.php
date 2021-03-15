@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Utils\Bouncer;
 use Illuminate\Foundation\Http\FormRequest;
-use Silber\Bouncer\BouncerFacade as Bouncer;
 
 abstract class ApiResourceRequest extends FormRequest
 {
@@ -14,7 +14,7 @@ abstract class ApiResourceRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return request()->method === 'GET' || Bouncer::can('manage', $this->getModel());
     }

@@ -13,15 +13,18 @@ use Symfony\Component\HttpFoundation\Response as ResponseCode;
 
 class WorkerControllerTest extends TestCase
 {
-    public function testWorkerIndex(){
+    public function testWorkerIndex(): void
+    {
         $this->assertModel('worker.index', WorkerResource::make(Worker::first()), [], Worker::count());
     }
 
-    public function testWorkerShow(){
+    public function testWorkerShow(): void
+    {
         $this->assertModel('worker.show', WorkerResource::make(Worker::first()), ['worker' => Worker::first()->id]);
     }
 
-    public function testWorkerCreate(){
+    public function testWorkerCreate(): void
+    {
         $this->withoutExceptionHandling();
         $requestModel = [
             'name' => 'Test Worker',
@@ -33,11 +36,13 @@ class WorkerControllerTest extends TestCase
         $this->assertPermissionCanCreate('admin', 'worker', $requestModel, $requestModel);
     }
 
-    public function testWorkerUpdate(){
+    public function testWorkerUpdate(): void
+    {
         $this->assertPermissionCanUpdate('admin', 'worker', ['name' => 'Updated Worker'], Worker::latestOne());
     }
 
-    public function testWorkerDelete(){
+    public function testWorkerDelete(): void
+    {
         $this->assertPermissionCanDelete('admin', 'worker', Worker::first());
     }
 }

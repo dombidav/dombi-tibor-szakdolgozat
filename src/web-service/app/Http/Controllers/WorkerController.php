@@ -6,13 +6,15 @@ use App\Http\Requests\WorkerRequest;
 use App\Http\Requests\WorkerUpdateRequest;
 use App\Http\Resources\WorkerResource;
 use App\Models\Worker;
+use App\Utils\Bouncer;
 use Exception;
-use Silber\Bouncer\BouncerFacade;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Symfony\Component\HttpFoundation\Response as ResponseCode;
 
 class WorkerController extends Controller
 {
-    public function index()
+    public function index(): AnonymousResourceCollection
     {
         return WorkerResource::collection(Worker::all());
     }
@@ -23,21 +25,21 @@ class WorkerController extends Controller
         return response(WorkerResource::make($worker), ResponseCode::HTTP_CREATED);
     }
 
-    public function show(Worker $worker)
+    public function show(Worker $worker): WorkerResource
     {
         return WorkerResource::make($worker);
     }
 
-    public function update(WorkerUpdateRequest $request, Worker $worker)
+    public function update(WorkerUpdateRequest $request, Worker $worker): JsonResponse
     {
         $worker->update($request->validated());
         $worker->save();
         return response()->json('', ResponseCode::HTTP_NO_CONTENT);
     }
 
-    public function destroy(Worker $worker)
+    public function destroy(Worker $worker): JsonResponse
     {
-        if(!BouncerFacade::can('manage', Worker::class)){
+        if(!Bouncer::can('manage', Worker::class)){
             return response()->json(['message' => 'You can not delete any workers'], ResponseCode::HTTP_FORBIDDEN);
         }
         try {

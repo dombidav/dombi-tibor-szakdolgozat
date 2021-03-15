@@ -6,8 +6,10 @@ use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Utils\Bouncer;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Silber\Bouncer\BouncerFacade;
@@ -16,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response as ResponseCode;
 class UserController extends Controller
 {
 
-    public function index()
+    public function index(): AnonymousResourceCollection
     {
         return UserResource::collection(User::all());
     }
@@ -29,7 +31,7 @@ class UserController extends Controller
         return response(UserResource::make($user))->setStatusCode(ResponseCode::HTTP_CREATED);
     }
 
-    public function show(User $user)
+    public function show(User $user): UserResource
     {
         return UserResource::make($user);
     }
@@ -53,9 +55,9 @@ class UserController extends Controller
      * @param User $user
      * @return JsonResponse
      */
-    public function destroy(User $user)
+    public function destroy(User $user): JsonResponse
     {
-        if(!BouncerFacade::can('manage', User::class)) {
+        if(!Bouncer::can('manage', User::class)) {
             return response()->json(['message' => 'You can not delete any users'], ResponseCode::HTTP_FORBIDDEN);
         }
         if($user->id === Auth::user()->id) {

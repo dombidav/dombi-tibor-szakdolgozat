@@ -16,7 +16,8 @@
         "laravel/tinker": "^2.5",
         "profclems/postman-collection-generator": "^1.2",
         "silber/bouncer": "v1.0.0-rc.10",
-        "tymon/jwt-auth": "^1.0"
+        "tymon/jwt-auth": "^1.0",
+        "ext-pdo": "*"
     },
     "require-dev": {
         "andreaselia/laravel-api-to-postman": "^1.7",

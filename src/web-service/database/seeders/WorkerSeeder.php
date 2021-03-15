@@ -12,7 +12,7 @@ class WorkerSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         Worker::factory(50)->create();
     }
