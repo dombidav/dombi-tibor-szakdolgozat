@@ -52,17 +52,20 @@ class UserController extends Controller
     /**
      * @param User $user
      * @return JsonResponse
-     * @throws Exception
      */
     public function destroy(User $user)
     {
         if(!BouncerFacade::can('manage', User::class)) {
-            return response()->json(['message' => 'You can not delete any user'], ResponseCode::HTTP_FORBIDDEN);
+            return response()->json(['message' => 'You can not delete any users'], ResponseCode::HTTP_FORBIDDEN);
         }
         if($user->id === Auth::user()->id) {
             return response()->json(['message' => 'You can not delete your own account'], ResponseCode::HTTP_FORBIDDEN);
         }
-        $user->delete();
+        try {
+            $user->delete();
+        } catch (Exception $e) {
+            response()->json($e, 500);
+        }
         return response()->json('', ResponseCode::HTTP_NO_CONTENT);
     }
 }
