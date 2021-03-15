@@ -12,5 +12,10 @@ class Worker extends Model
     use HasFactory;
     use ApiResource;
 
-
+    protected $fillable = [
+        'name',
+        'rfid',
+        'telephone',
+        'birthdate'
+    ];
 }
