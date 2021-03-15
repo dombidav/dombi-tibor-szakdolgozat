@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Worker;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response as ResponseCode;
 
@@ -21,10 +22,12 @@ class WorkerControllerTest extends TestCase
     }
 
     public function testWorkerCreate(){
+        $this->withoutExceptionHandling();
         $requestModel = [
             'name' => 'Test Worker',
-            'born' => now(),
-            'telephone' => $this->faker->phoneNumber
+            'birthdate' => now()->toDateString(),
+            'rfid' => Str::random(6),
+            'telephone' => $this->faker->e164PhoneNumber
         ];
 
         $this->assertPermissionCanCreate('admin', 'worker', $requestModel, $requestModel);
