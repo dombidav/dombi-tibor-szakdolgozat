@@ -13,7 +13,7 @@ class CreateBouncerTables extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create(Models::table('abilities'), function (Blueprint $table) {
             $table->bigIncrements('id');
@@ -84,7 +84,7 @@ class CreateBouncerTables extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::drop(Models::table('permissions'));
         Schema::drop(Models::table('assigned_roles'));

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Worker;
 use Illuminate\Database\Seeder;
 
 class WorkerSeeder extends Seeder
@@ -11,8 +12,8 @@ class WorkerSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
-        //
+        Worker::factory(50)->create();
     }
 }

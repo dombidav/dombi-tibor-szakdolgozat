@@ -1,4 +1,6 @@
-<?php
+<?php /** @noinspection MagicMethodsValidityInspection */
+
+/** @noinspection PhpUnhandledExceptionInspection */
 
 namespace Tests;
 
@@ -11,6 +13,8 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Testing\TestResponse;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Response as ResponseCode;
 
 abstract class TestCase extends BaseTestCase {
@@ -18,7 +22,7 @@ abstract class TestCase extends BaseTestCase {
     use CreatesApplication;
     use DatabaseMigrations;
 
-    private Generator $faker;
+    protected Generator $faker;
 
     /** @var User[] $users */
     protected array $users;
@@ -38,9 +42,10 @@ abstract class TestCase extends BaseTestCase {
 
     public function __get($key) {
 
-        if ($key === 'faker')
+        if ($key === 'faker') {
             return $this->faker;
-        throw new Exception('Unknown Key Requested');
+        }
+        throw new RuntimeException('Unknown Key Requested');
     }
 
     /**
@@ -67,7 +72,7 @@ abstract class TestCase extends BaseTestCase {
         $response->assertJsonFragment($expecting);
     }
 
-    public function assertPermissionCanNotCreate(string $actingAs, string $canNotCreate, array $sending): \Illuminate\Testing\TestResponse
+    public function assertPermissionCanNotCreate(string $actingAs, string $canNotCreate, array $sending): TestResponse
     {
         $response = $this->actingAs($this->users[$actingAs])->post(route("$canNotCreate.store"), $sending);
         $response->assertStatus(ResponseCode::HTTP_FORBIDDEN);
@@ -89,13 +94,13 @@ abstract class TestCase extends BaseTestCase {
      * @param string $actingAs
      * @param string $canDelete
      * @param $target
-     * @return \Illuminate\Testing\TestResponse
+     * @return TestResponse
      */
     public function assertPermissionCanDelete(
         string $actingAs,
         string $canDelete,
         $target
-    ): \Illuminate\Testing\TestResponse {
+    ): TestResponse {
         $response = $this->actingAs($this->users[$actingAs])->delete(route("$canDelete.destroy", $target));
         $response->assertStatus(ResponseCode::HTTP_NO_CONTENT);
         return $response;
@@ -105,9 +110,9 @@ abstract class TestCase extends BaseTestCase {
      * @param string $actingAs
      * @param string $canNotDelete
      * @param $target
-     * @return \Illuminate\Testing\TestResponse
+     * @return TestResponse
      */
-    public function assertPermissionCanNotDelete(string $actingAs, string $canNotDelete, $target): \Illuminate\Testing\TestResponse
+    public function assertPermissionCanNotDelete(string $actingAs, string $canNotDelete, $target): TestResponse
     {
         $response = $this->actingAs($this->users[$actingAs])->delete(route("$canNotDelete.destroy", $target));
         $response->assertStatus(ResponseCode::HTTP_FORBIDDEN);

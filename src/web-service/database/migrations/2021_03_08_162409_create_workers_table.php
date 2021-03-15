@@ -11,10 +11,14 @@ class CreateWorkersTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('workers', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('rfid')->nullable();
+            $table->date('birthdate');
+            $table->string('telephone')->nullable();
             $table->timestamps();
         });
     }
@@ -24,7 +28,7 @@ class CreateWorkersTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('workers');
     }

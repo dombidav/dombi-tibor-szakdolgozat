@@ -2,20 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\ApiResource;
 use App\Traits\UUID;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-
-/**
- * @method static User first()
- * @method static User create(array $array_merge)
- * @method static Builder where(string $field, string $operator, string $value=null)
- * @method static Builder latest()
- */
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -23,6 +16,7 @@ class User extends Authenticatable implements JWTSubject
     use HasRolesAndAbilities;
     use Notifiable;
     use UUID;
+    use ApiResource;
 
     protected $fillable = [
         'name',

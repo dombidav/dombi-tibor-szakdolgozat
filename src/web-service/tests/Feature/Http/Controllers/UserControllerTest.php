@@ -11,17 +11,17 @@ class UserControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function testUserIndex()
+    public function testUserIndex(): void
     {
         $this->assertModel('user.index', UserResource::make(User::first()), [], User::count());
     }
 
-    public function testUserShow()
+    public function testUserShow(): void
     {
         $this->assertModel('user.show', UserResource::make(User::first()), ['user' => User::first()->id]);
     }
 
-    public function testAdminCanCreateUsers()
+    public function testAdminCanCreateUsers(): void
     {
         $requestModel = [
             'name' => 'Test User',
@@ -37,7 +37,7 @@ class UserControllerTest extends TestCase
         $this->assertPermissionCanCreate('admin', 'user', $requestModel, $expectedData);
     }
 
-    public function testOthersCanNotCreateUsers()
+    public function testOthersCanNotCreateUsers(): void
     {
         $requestModel = [
             'name' => 'Test User',
@@ -50,12 +50,12 @@ class UserControllerTest extends TestCase
         $this->assertPermissionCanNotCreate('guard', 'user', $requestModel);
     }
 
-    public function testAdminCanUpdateUser()
+    public function testAdminCanUpdateUser(): void
     {
         $this->assertPermissionCanUpdate('admin', 'user', ['name' => 'Updated User'], User::latest()->first());
     }
 
-    public function testAdminCanOnlyUpdateOwnPassword()
+    public function testAdminCanOnlyUpdateOwnPassword(): void
     {
         $requestModel = [
             'password' => 'updated_secret',
@@ -66,19 +66,19 @@ class UserControllerTest extends TestCase
         $this->assertPermissionCanNotUpdate('admin', 'user', $requestModel, $this->users['supervisor']);
     }
 
-    public function testOthersCanNotUpdateUsers()
+    public function testOthersCanNotUpdateUsers(): void
     {
         $this->assertPermissionCanNotUpdate('supervisor', 'user', ['name' => 'Updated User'], User::latest()->first());
         $this->assertPermissionCanNotUpdate('guard', 'user', ['name' => 'Updated User'], User::latest()->first());
     }
 
-    public function testAdminCanDeleteUsers()
+    public function testAdminCanDeleteUsers(): void
     {
         $this->assertPermissionCanDelete('admin', 'user', $this->users['supervisor']->id);
         $this->assertPermissionCanNotDelete('admin', 'user', $this->users['admin']->id);
     }
 
-    public function testOthersCanNotDeleteUsers()
+    public function testOthersCanNotDeleteUsers(): void
     {
         $this->assertPermissionCanNotDelete('supervisor', 'user', $this->users['guard']->id);
         $this->assertPermissionCanNotDelete('guard', 'user', $this->users['supervisor']->id);

@@ -25,7 +25,7 @@ class JwtAuthController extends Controller
      * @return JsonResponse
      * @throws ValidationException
      */
-    public function login(Request $request)
+    public function login(Request $request): JsonResponse
     {
         $req = Validator::make($request->all(), [
             'email' => 'required|email',
@@ -48,7 +48,7 @@ class JwtAuthController extends Controller
      * @param $token
      * @return JsonResponse
      */
-    protected function generateToken($token)
+    protected function generateToken($token): JsonResponse
     {
         /** @noinspection PhpUndefinedMethodInspection */
         /** @noinspection PhpParamsInspection */
@@ -67,7 +67,7 @@ class JwtAuthController extends Controller
      * @return JsonResponse
      * @throws ValidationException
      */
-    public function register(Request $request)
+    public function register(Request $request): JsonResponse
     {
         $req = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
@@ -93,7 +93,7 @@ class JwtAuthController extends Controller
     /**
      * Sign out
      */
-    public function signout()
+    public function signout(): JsonResponse
     {
         auth()->logout();
         return response()->json(['message' => 'User loged out']);
@@ -102,7 +102,7 @@ class JwtAuthController extends Controller
     /**
      * Token refresh
      */
-    public function refresh()
+    public function refresh(): JsonResponse
     {
         /** @noinspection PhpPossiblePolymorphicInvocationInspection */
         return $this->generateToken(auth()->refresh());
@@ -111,7 +111,7 @@ class JwtAuthController extends Controller
     /**
      * User
      */
-    public function profile()
+    public function profile(): UserResource
     {
         return UserResource::make(Auth::user());
     }

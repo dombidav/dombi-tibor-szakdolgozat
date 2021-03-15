@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\JwtAuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WorkerController;
 use Illuminate\Support\Facades\Route;
 
 //AUTH
@@ -18,3 +19,4 @@ Route::group([
 
 //RESOURCES
 Route::apiResource('user', UserController::class);
+Route::apiResource('worker', WorkerController::class);
