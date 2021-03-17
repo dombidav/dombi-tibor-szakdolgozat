@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\JwtAuthController;
+use App\Http\Controllers\LockController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WorkerController;
 use Illuminate\Support\Facades\Route;
@@ -20,3 +21,4 @@ Route::group([
 //RESOURCES
 Route::apiResource('user', UserController::class);
 Route::apiResource('worker', WorkerController::class);
+Route::apiResource('lock', LockController::class);
