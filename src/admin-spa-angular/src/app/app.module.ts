@@ -19,6 +19,7 @@ import {AuthGuard} from './guards/auth-guard.service';
 import { NotificationItemComponent } from './components/notification/notification-item/notification-item.component';
 import {DatePipe} from '@angular/common';
 import { ScriptLoaderComponent } from './helpers/script-loader/script-loader.component';
+import { SettingsPageComponent } from './pages/settings-page/settings-page.component';
 
 
 @NgModule({
@@ -33,7 +34,8 @@ import { ScriptLoaderComponent } from './helpers/script-loader/script-loader.com
     RegisterComponent,
     ProfileComponent,
     NotificationItemComponent,
-    ScriptLoaderComponent
+    ScriptLoaderComponent,
+    SettingsPageComponent
   ],
   imports: [
     BrowserModule,
