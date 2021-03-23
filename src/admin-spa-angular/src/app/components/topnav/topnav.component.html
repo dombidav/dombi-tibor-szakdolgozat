@@ -1,0 +1,63 @@
+<nav class="navbar navbar-expand navbar-light navbar-bg">
+  <a class="sidebar-toggle d-flex">
+    <i class="hamburger align-self-center"></i>
+  </a>
+
+  <form class="d-none d-sm-inline-block">
+    <div class="input-group input-group-navbar">
+      <input type="text" class="form-control" placeholder="Search…" aria-label="Search">
+      <button class="btn" type="button">
+        <i class="align-middle" data-feather="search"></i>
+      </button>
+    </div>
+  </form>
+
+  <div class="navbar-collapse collapse">
+    <ul class="navbar-nav navbar-align">
+      <li class="nav-item dropdown">
+        <a class="nav-icon dropdown-toggle" href="#" id="alertsDropdown" data-bs-toggle="dropdown">
+          <div class="position-relative">
+            <i class="fas fa-bell"></i>
+            <span *ngIf="notifications.length > 0" class="indicator bg-danger">{{ notifications.length}}</span>
+          </div>
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end py-0"
+             aria-labelledby="alertsDropdown">
+          <div class="dropdown-menu-header">
+            {{ notifications.length }} New Notifications
+          </div>
+          <div class="list-group">
+            <app-notification-item *ngFor="let notification of notifications" [notification]='notification'></app-notification-item>
+          </div>
+          <div class="dropdown-menu-footer">
+            <a href="#" class="text-muted">Show all notifications</a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#" data-bs-toggle="dropdown">
+          <i class="align-middle" data-feather="settings"></i>
+        </a>
+
+        <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown">
+          <img src="assets/img/avatars/avatar.png" class="avatar img-fluid rounded-circle me-1" alt="Profile Image"/>
+          <span class="text-dark">{{ userName }}</span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-end">
+          <a class="dropdown-item" routerLink="/profile"><i class="align-middle me-1"
+                                                                data-feather="user"></i> Profile</a>
+          <a class="dropdown-item" href="#"><i class="align-middle me-1" data-feather="pie-chart"></i>
+            Analytics</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="pages-settings.html"><i class="align-middle me-1"
+                                                                 data-feather="settings"></i> Settings
+            & Privacy</a>
+          <a class="dropdown-item" href="#"><i class="align-middle me-1"
+                                               data-feather="help-circle"></i> Help Center</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#" (click)="signOut()">Log out</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
