@@ -1,0 +1,6 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb bg-transparent p-0 mt-1 mb-0">
+    <li class="breadcrumb-item"><a href="/home">AdminKit</a></li>
+    <li class="breadcrumb-item" *ngFor="let item of objectItems"><a href="{{ item.url }}">{{ item.title }}</a></li>
+  </ol>
+</nav>
