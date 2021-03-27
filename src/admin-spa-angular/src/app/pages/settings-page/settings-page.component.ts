@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {TokenStorageService} from '../../services/token-storage.service';
 import {UserModel} from '../../models/user.model';
+import {TabViewModule} from 'primeng/tabview';
 
 @Component({
   selector: 'app-settings-page',
@@ -9,6 +10,7 @@ import {UserModel} from '../../models/user.model';
 })
 export class SettingsPageComponent implements OnInit {
 
+  index = 0; //Used by TabViewModule
   public user: UserModel
 
   constructor(private token: TokenStorageService) {
