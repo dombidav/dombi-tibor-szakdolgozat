@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Traits\ApiResource;
-use Illuminate\Database\Eloquent\Builder;
+use App\Traits\UUID;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,6 +11,7 @@ class Worker extends Model
 {
     use HasFactory;
     use ApiResource;
+    use UUID;
 
     protected $fillable = [
         'name',
@@ -18,4 +19,8 @@ class Worker extends Model
         'telephone',
         'birthdate'
     ];
+
+    public function groups(){
+        return $this->belongsToMany(Group::class);
+    }
 }

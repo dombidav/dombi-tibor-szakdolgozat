@@ -14,7 +14,7 @@ class CreateWorkersTable extends Migration
     public function up(): void
     {
         Schema::create('workers', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->string('rfid')->nullable();
             $table->date('birthdate');
