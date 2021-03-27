@@ -6,6 +6,7 @@ namespace App\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 /**
  * @method static Model|null first()
@@ -27,5 +28,9 @@ trait ApiResource
     public static function random(): Model
     {
         return self::inRandomOrder()->first();
+    }
+
+    public static function sample(int $number): Collection{
+        return self::inRandomOrder()->limit($number)->get();
     }
 }
