@@ -11,6 +11,8 @@ use App\Models\Worker;
 use App\Utils\Bouncer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
+use Illuminate\Routing\ResponseFactory;
 use Symfony\Component\HttpFoundation\Response as ResponseCode;
 
 class GroupController extends Controller
@@ -43,7 +45,7 @@ class GroupController extends Controller
         return Bouncer::TryDelete(Group::class, $group);
     }
 
-    public function attach(WorkerGroupAttachRequest $request){
+    public function attach(WorkerGroupAttachRequest $request): JsonResponse{
         $validated = $request->validated();
 
         try{
@@ -53,6 +55,19 @@ class GroupController extends Controller
         }catch (\Exception $e){
             return response()->json(['error' => $e])->setStatusCode(ResponseCode::HTTP_BAD_REQUEST);
         }
-        return response('', ResponseCode::HTTP_NO_CONTENT);
+        return response()->json()->setStatusCode(ResponseCode::HTTP_NO_CONTENT);
+    }
+
+    public function detach(WorkerGroupAttachRequest $request){
+        $validated = $request->validated();
+
+        try{
+            /** @noinspection PhpPossiblePolymorphicInvocationInspection : The return of Find function is defined in APIResource trait */
+            /** @noinspection NullPointerExceptionInspection : Safe navigation should handle null pointers, PhpStorm bug? */
+            Worker::find($validated['worker_id'])->groups()->detach($validated['group_id']);
+        }catch (\Exception $e){
+            return response()->json(['error' => $e])->setStatusCode(ResponseCode::HTTP_BAD_REQUEST);
+        }
+        return response()->json()->setStatusCode(ResponseCode::HTTP_NO_CONTENT);
     }
 }

@@ -21,6 +21,7 @@ Route::group([
 
 Route::group(['middleware' => 'api'], function ($router){
     Route::post('/worker-group', [GroupController::class, 'attach'])->name('group.attach');
+    Route::delete('/worker-group', [GroupController::class, 'detach'])->name('group.detach');
 });
 
 //RESOURCES
