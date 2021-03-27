@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\GroupRequest;
+use App\Http\Requests\GroupUpdateRequest;
+use App\Http\Resources\GroupResource;
+use App\Models\Group;
+use App\Utils\Bouncer;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Symfony\Component\HttpFoundation\Response as ResponseCode;
+
+class GroupController extends Controller
+{
+    public function index(): AnonymousResourceCollection
+    {
+        return GroupResource::collection(Group::all());
+    }
+
+    public function store(GroupRequest $request)
+    {
+        $group = Group::create($request->validated());
+        return response(GroupResource::make($group), ResponseCode::HTTP_CREATED);
+    }
+
+    public function show(Group $group): GroupResource
+    {
+        return GroupResource::make($group);
+    }
+
+    public function update(GroupUpdateRequest $request, Group $group): JsonResponse
+    {
+        $group->update($request->validated());
+        $group->save();
+        return response()->json('', ResponseCode::HTTP_NO_CONTENT);
+    }
+
+    public function destroy(Group $group): JsonResponse
+    {
+        return Bouncer::TryDelete(Group::class, $group);
+    }
+}
