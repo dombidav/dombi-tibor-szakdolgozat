@@ -10,6 +10,7 @@ use Illuminate\Support\Collection;
 
 /**
  * @method static Model|null first()
+ * @method static Model|null find(int|string $id)
  * @method static int count()
  * @method static Builder latest()
  * @method static Builder inRandomOrder()

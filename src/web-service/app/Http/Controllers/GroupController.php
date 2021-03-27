@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\GroupRequest;
 use App\Http\Requests\GroupUpdateRequest;
+use App\Http\Requests\WorkerGroupAttachRequest;
 use App\Http\Resources\GroupResource;
 use App\Models\Group;
+use App\Models\Worker;
 use App\Utils\Bouncer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -39,5 +41,18 @@ class GroupController extends Controller
     public function destroy(Group $group): JsonResponse
     {
         return Bouncer::TryDelete(Group::class, $group);
+    }
+
+    public function attach(WorkerGroupAttachRequest $request){
+        $validated = $request->validated();
+
+        try{
+            /** @noinspection PhpPossiblePolymorphicInvocationInspection : The return of Find function is defined in APIResource trait */
+            /** @noinspection NullPointerExceptionInspection : Safe navigation should handle null pointers, PhpStorm bug? */
+            Worker::find($validated['worker_id'])->groups()->attach($validated['group_id']);
+        }catch (\Exception $e){
+            return response()->json(['error' => $e])->setStatusCode(ResponseCode::HTTP_BAD_REQUEST);
+        }
+        return response('', ResponseCode::HTTP_NO_CONTENT);
     }
 }
