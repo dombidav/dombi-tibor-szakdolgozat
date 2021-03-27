@@ -19,6 +19,10 @@ Route::group([
     Route::post('/signout', [JwtAuthController::class, 'signout']);
 });
 
+Route::group(['middleware' => 'api'], function ($router){
+    Route::post('/worker-group', [GroupController::class, 'attach'])->name('group.attach');
+});
+
 //RESOURCES
 Route::apiResource('user', UserController::class);
 Route::apiResource('worker', WorkerController::class);
