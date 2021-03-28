@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccessRuleController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\JwtAuthController;
 use App\Http\Controllers\LockController;
@@ -29,3 +30,4 @@ Route::apiResource('user', UserController::class);
 Route::apiResource('worker', WorkerController::class);
 Route::apiResource('lock', LockController::class);
 Route::apiResource('group', GroupController::class);
+Route::apiResource('rule', AccessRuleController::class);
