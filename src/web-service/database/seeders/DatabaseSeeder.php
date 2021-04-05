@@ -20,5 +20,6 @@ class DatabaseSeeder extends Seeder
         $this->call(GroupSeeder::class);
         $this->call(WorkerGroupingSeeder::class);
         $this->call(AccessRuleSeeder::class);
+        $this->call(LockGroupSeeder::class);
     }
 }
