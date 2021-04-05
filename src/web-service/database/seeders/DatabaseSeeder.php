@@ -16,10 +16,12 @@ class DatabaseSeeder extends Seeder
         $this->call(UserSeeder::class);
         $this->call(BouncerSeeder::class);
         $this->call(WorkerSeeder::class);
-        $this->call(LockSeeder::class);
         $this->call(GroupSeeder::class);
         $this->call(WorkerGroupingSeeder::class);
-        $this->call(AccessRuleSeeder::class);
+        $this->call(LockSeeder::class);
         $this->call(LockGroupSeeder::class);
+        $this->call(LockGroupingSeeder::class);
+        $this->call(AccessRuleSeeder::class);
+        $this->call(RulingSeeder::class);
     }
 }

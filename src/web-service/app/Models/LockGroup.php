@@ -13,6 +13,13 @@ class LockGroup extends Model
 
     protected $fillable = [
         'name',
-        //TODO: Complete definition
     ];
+
+    public function locks(){
+        return $this->belongsToMany(Lock::class);
+    }
+
+    public function rules(){
+        return $this->belongsToMany(AccessRule::class);
+    }
 }

@@ -12,7 +12,6 @@ class LockGroupUpdateRequest extends ApiResourceRequest
         return
             [
                 'name' => ['min:3'],
-                //TODO: Complete definition
             ];
     }
 

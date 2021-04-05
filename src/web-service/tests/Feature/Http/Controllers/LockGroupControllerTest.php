@@ -23,7 +23,6 @@ class LockGroupControllerTest extends TestCase
         $this->withoutExceptionHandling();
         $requestModel = [
             'name' => 'Test LockGroup',
-            //TODO: Complete definition
         ];
 
         $this->assertPermissionCanCreate('admin', 'lock_group', $requestModel, $requestModel);

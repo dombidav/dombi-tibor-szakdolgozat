@@ -23,7 +23,6 @@ class LockGroupFactory extends Factory
     {
         return [
             'name' => $this->faker->name,
-            //TODO: Complete Definition
         ];
     }
 }
