@@ -13,10 +13,10 @@ class ConnectWorkerGroup extends Migration
      */
     public function up()
     {
-        Schema::create('group_worker', function (Blueprint $table) {
+        Schema::create('team_worker', function (Blueprint $table) {
             $table->id()->comment('Connection identifier');
             $table->uuid('worker_id');
-            $table->bigInteger('group_id');
+            $table->bigInteger('team_id');
         });
     }
 

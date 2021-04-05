@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call(UserSeeder::class);
         $this->call(BouncerSeeder::class);
         $this->call(WorkerSeeder::class);
-        $this->call(GroupSeeder::class);
+        $this->call(TeamSeeder::class);
         $this->call(WorkerGroupingSeeder::class);
         $this->call(LockSeeder::class);
         $this->call(LockGroupSeeder::class);

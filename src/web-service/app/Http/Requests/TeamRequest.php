@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Group;
+use App\Models\Team;
 
-class GroupRequest extends ApiResourceRequest
+class TeamRequest extends ApiResourceRequest
 {
     /** @inheritDoc */
     public function rules(): array
@@ -19,6 +19,6 @@ class GroupRequest extends ApiResourceRequest
 
     protected function getModel(): string
     {
-        return Group::class;
+        return Team::class;
     }
 }

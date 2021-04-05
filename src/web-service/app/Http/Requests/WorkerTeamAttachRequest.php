@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Utils\Bouncer;
 use Illuminate\Foundation\Http\FormRequest;
 
-class WorkerGroupAttachRequest extends GroupRequest
+class WorkerTeamAttachRequest extends TeamRequest
 {
     public function rules(): array
     {

@@ -13,10 +13,10 @@ class ConnectWorkerRule extends Migration
      */
     public function up()
     {
-        Schema::create('access_rule_group', function (Blueprint $table) {
+        Schema::create('access_rule_team', function (Blueprint $table) {
             $table->id()->comment('Connection identifier');
             $table->bigInteger('access_rule_id');
-            $table->bigInteger('group_id');
+            $table->bigInteger('team_id');
         });
     }
 
