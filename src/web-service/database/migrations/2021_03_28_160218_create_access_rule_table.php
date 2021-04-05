@@ -13,10 +13,11 @@ class CreateAccessRuleTable extends Migration
      */
     public function up(): void
     {
-        Schema::create('accessrules', function (Blueprint $table) {
+        Schema::create('access_rules', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            //TODO: Complete definition
+            $table->text('description')->nullable();
+            $table->json('definition')->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ class CreateAccessRuleTable extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('accessrules');
+        Schema::dropIfExists('access_rules');
     }
 }
