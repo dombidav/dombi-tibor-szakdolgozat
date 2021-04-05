@@ -16,7 +16,6 @@ class CreateLockGroupTable extends Migration
         Schema::create('lock_groups', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            //TODO: Complete definition
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ class CreateLockGroupTable extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('lockgroups');
+        Schema::dropIfExists('lock_groups');
     }
 }

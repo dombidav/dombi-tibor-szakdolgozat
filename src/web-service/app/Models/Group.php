@@ -24,4 +24,8 @@ class Group extends Model
     public function workers(){
         return $this->belongsToMany(Worker::class);
     }
+
+    public function rules(){
+        return $this->belongsToMany(AccessRule::class);
+    }
 }

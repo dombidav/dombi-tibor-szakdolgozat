@@ -22,4 +22,9 @@ class Lock extends Model
             default => 'unknown'
         });
     }
+
+    public function groups()
+    {
+        return $this->belongsToMany(LockGroup::class);
+    }
 }

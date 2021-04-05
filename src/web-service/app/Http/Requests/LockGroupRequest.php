@@ -14,7 +14,6 @@ class LockGroupRequest extends ApiResourceRequest
                 ? []
                 : [
                 'name' => ['required', 'min:3'],
-                //TODO: Complete definition
             ];
     }
 
