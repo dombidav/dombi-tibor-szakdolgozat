@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\AccessRule;
-use App\Models\Group;
+use App\Models\Team;
 use App\Models\LockGroup;
 use Illuminate\Database\Seeder;
 
@@ -17,8 +17,8 @@ class RulingSeeder extends Seeder
     public function run()
     {
         //First run: Teams to Rules
-        $teams = Group::inRandomOrder()->get();
-        /** @var Group $team */
+        $teams = Team::inRandomOrder()->get();
+        /** @var Team $team */
         foreach ($teams as $team){
             $n = random_int(1, 4);
             $rules = AccessRule::sample($n);

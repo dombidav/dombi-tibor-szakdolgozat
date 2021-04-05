@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class Group
+ * Class Team
  * @package App\Models
  * @property Collection workers
  */
-class Group extends Model
+class Team extends Model
 {
     use HasFactory;
     use ApiResource;

@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccessRuleController;
-use App\Http\Controllers\GroupController;
+use App\Http\Controllers\TeamController;
 use App\Http\Controllers\JwtAuthController;
 use App\Http\Controllers\LockController;
 use App\Http\Controllers\LockGroupController;
@@ -22,14 +22,14 @@ Route::group([
 });
 
 Route::group(['middleware' => 'api'], function ($router){
-    Route::post('/worker-group', [GroupController::class, 'attach'])->name('group.attach');
-    Route::delete('/worker-group', [GroupController::class, 'detach'])->name('group.detach');
+    Route::post('/team/attach', [TeamController::class, 'attach'])->name('team.attach');
+    Route::delete('/team/detach', [TeamController::class, 'detach'])->name('team.detach');
 });
 
 //RESOURCES
 Route::apiResource('user', UserController::class);
 Route::apiResource('worker', WorkerController::class);
 Route::apiResource('lock', LockController::class);
-Route::apiResource('group', GroupController::class);
+Route::apiResource('team', TeamController::class);
 Route::apiResource('rule', AccessRuleController::class);
 Route::apiResource('lock-group', LockGroupController::class);

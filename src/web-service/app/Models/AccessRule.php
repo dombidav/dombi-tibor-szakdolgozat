@@ -51,6 +51,6 @@ class AccessRule extends Model
     }
 
     public function workerGroups(){
-        return $this->belongsToMany(Group::class);
+        return $this->belongsToMany(Team::class);
     }
 }

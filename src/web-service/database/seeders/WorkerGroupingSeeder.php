@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Group;
+use App\Models\Team;
 use App\Models\Worker;
 use Exception;
 use Illuminate\Database\Seeder;
@@ -21,9 +21,9 @@ class WorkerGroupingSeeder extends Seeder
         /** @var Worker $worker */
         foreach ($workers as $worker){
             $n = random_int(0, 4);
-            $groups = Group::sample($n);
+            $teams = Team::sample($n);
             for($i = 0; $i < $n; $i++){
-                $worker->groups()->attach($groups[$i]);
+                $worker->teams()->attach($teams[$i]);
                 $worker->save();
             }
         }

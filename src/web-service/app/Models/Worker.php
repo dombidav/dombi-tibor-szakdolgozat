@@ -20,7 +20,7 @@ class Worker extends Model
         'birthdate'
     ];
 
-    public function groups(){
-        return $this->belongsToMany(Group::class);
+    public function teams(){
+        return $this->belongsToMany(Team::class);
     }
 }
