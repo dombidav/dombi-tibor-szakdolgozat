@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LockGroupAttachRequest;
 use App\Http\Requests\LockGroupRequest;
 use App\Http\Requests\LockGroupUpdateRequest;
 use App\Http\Resources\LockGroupResource;
+use App\Models\Lock;
 use App\Models\LockGroup;
 use App\Utils\Bouncer;
 use Illuminate\Http\JsonResponse;
@@ -24,20 +26,46 @@ class LockGroupController extends Controller
         return response(LockGroupResource::make($lockgroup), ResponseCode::HTTP_CREATED);
     }
 
-    public function show(LockGroup $lockgroup): LockGroupResource
+    public function show(LockGroup $lock_group): LockGroupResource
     {
-        return LockGroupResource::make($lockgroup);
+        return LockGroupResource::make($lock_group);
     }
 
-    public function update(LockGroupUpdateRequest $request, LockGroup $lockgroup): JsonResponse
+    public function update(LockGroupUpdateRequest $request, LockGroup $lock_group): JsonResponse
     {
-        $lockgroup->update($request->validated());
-        $lockgroup->save();
+        $lock_group->update($request->validated());
+        $lock_group->save();
         return response()->json('', ResponseCode::HTTP_NO_CONTENT);
     }
 
-    public function destroy(LockGroup $lockgroup): JsonResponse
+    public function destroy(LockGroup $lock_group): JsonResponse
     {
-        return Bouncer::TryDelete(LockGroup::class, $lockgroup);
+        return Bouncer::TryDelete(LockGroup::class, $lock_group);
     }
+
+    public function attach(LockGroupAttachRequest $request): JsonResponse{
+        $validated = $request->validated();
+        try{
+            /** @noinspection PhpPossiblePolymorphicInvocationInspection : The return of Find function is defined in APIResource trait */
+            /** @noinspection NullPointerExceptionInspection : Safe navigation should handle null pointers, PhpStorm bug? */
+            Lock::find($validated['lock_id'])->groups()->attach($validated['lock_group_id']);
+        }catch (\Exception $e){
+            return response()->json(['error' => $e])->setStatusCode(ResponseCode::HTTP_BAD_REQUEST);
+        }
+        return response()->json()->setStatusCode(ResponseCode::HTTP_NO_CONTENT);
+    }
+
+    public function detach(LockGroupAttachRequest $request): JsonResponse{
+        $validated = $request->validated();
+        try{
+            /** @noinspection PhpPossiblePolymorphicInvocationInspection : The return of Find function is defined in APIResource trait */
+            /** @noinspection NullPointerExceptionInspection : Safe navigation should handle null pointers, PhpStorm bug? */
+            Lock::find($validated['lock_id'])->groups()->detach($validated['lock_group_id']);
+        }catch (\Exception $e){
+            return response()->json(['error' => $e])->setStatusCode(ResponseCode::HTTP_BAD_REQUEST);
+        }
+        return response()->json()->setStatusCode(ResponseCode::HTTP_NO_CONTENT);
+    }
+
+
 }
