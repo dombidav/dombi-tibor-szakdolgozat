@@ -5,13 +5,13 @@ namespace App\Http\Requests;
 use App\Utils\Bouncer;
 use Illuminate\Foundation\Http\FormRequest;
 
-class WorkerTeamAttachRequest extends TeamRequest
+class LockGroupAttachRequest extends TeamRequest
 {
     public function rules(): array
     {
         return [
-            'worker_id' => ['required', 'exists:workers,id'],
-            'team_id' => ['required', 'exists:teams,id']
+            'lock_id' => ['required', 'exists:locks,id'],
+            'lock_group_id' => ['required', 'exists:lock_groups,id']
         ];
     }
 }

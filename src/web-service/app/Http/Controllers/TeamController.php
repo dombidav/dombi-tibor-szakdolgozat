@@ -24,25 +24,25 @@ class TeamController extends Controller
 
     public function store(TeamRequest $request)
     {
-        $group = Team::create($request->validated());
-        return response(TeamResource::make($group), ResponseCode::HTTP_CREATED);
+        $team = Team::create($request->validated());
+        return response(TeamResource::make($team), ResponseCode::HTTP_CREATED);
     }
 
-    public function show(Team $group): TeamResource
+    public function show(Team $team): TeamResource
     {
-        return TeamResource::make($group);
+        return TeamResource::make($team);
     }
 
-    public function update(TeamUpdateRequest $request, Team $group): JsonResponse
+    public function update(TeamUpdateRequest $request, Team $team): JsonResponse
     {
-        $group->update($request->validated());
-        $group->save();
+        $team->update($request->validated());
+        $team->save();
         return response()->json('', ResponseCode::HTTP_NO_CONTENT);
     }
 
-    public function destroy(Team $group): JsonResponse
+    public function destroy(Team $team): JsonResponse
     {
-        return Bouncer::TryDelete(Team::class, $group);
+        return Bouncer::TryDelete(Team::class, $team);
     }
 
     public function attach(WorkerTeamAttachRequest $request): JsonResponse{
@@ -51,7 +51,7 @@ class TeamController extends Controller
         try{
             /** @noinspection PhpPossiblePolymorphicInvocationInspection : The return of Find function is defined in APIResource trait */
             /** @noinspection NullPointerExceptionInspection : Safe navigation should handle null pointers, PhpStorm bug? */
-            Worker::find($validated['worker_id'])->teams()->attach($validated['group_id']);
+            Worker::find($validated['worker_id'])->teams()->attach($validated['team_id']);
         }catch (\Exception $e){
             return response()->json(['error' => $e])->setStatusCode(ResponseCode::HTTP_BAD_REQUEST);
         }
@@ -64,7 +64,7 @@ class TeamController extends Controller
         try{
             /** @noinspection PhpPossiblePolymorphicInvocationInspection : The return of Find function is defined in APIResource trait */
             /** @noinspection NullPointerExceptionInspection : Safe navigation should handle null pointers, PhpStorm bug? */
-            Worker::find($validated['worker_id'])->teams()->detach($validated['group_id']);
+            Worker::find($validated['worker_id'])->teams()->detach($validated['team_id']);
         }catch (\Exception $e){
             return response()->json(['error' => $e])->setStatusCode(ResponseCode::HTTP_BAD_REQUEST);
         }

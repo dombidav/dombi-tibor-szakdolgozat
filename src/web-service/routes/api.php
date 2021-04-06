@@ -22,8 +22,10 @@ Route::group([
 });
 
 Route::group(['middleware' => 'api'], function ($router){
-    Route::post('/team/attach', [TeamController::class, 'attach'])->name('team.attach');
-    Route::delete('/team/detach', [TeamController::class, 'detach'])->name('team.detach');
+    Route::post('/team-control', [TeamController::class, 'attach'])->name('team.attach');
+    Route::delete('/team-control', [TeamController::class, 'detach'])->name('team.detach');
+    Route::post('/lock-control', [LockGroupController::class, 'attach'])->name('lock_group.attach');
+    Route::delete('/lock-control', [LockGroupController::class, 'detach'])->name('lock_group.detach');
 });
 
 //RESOURCES
@@ -32,4 +34,4 @@ Route::apiResource('worker', WorkerController::class);
 Route::apiResource('lock', LockController::class);
 Route::apiResource('team', TeamController::class);
 Route::apiResource('rule', AccessRuleController::class);
-Route::apiResource('lock-group', LockGroupController::class);
+Route::apiResource('lock_group', LockGroupController::class);

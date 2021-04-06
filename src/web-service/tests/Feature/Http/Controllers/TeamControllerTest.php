@@ -10,17 +10,17 @@ use Symfony\Component\HttpFoundation\Response as ResponseCode;
 
 class TeamControllerTest extends TestCase
 {
-    public function testGroupIndex(): void
+    public function testTeamIndex(): void
     {
         $this->assertModel('team.index', TeamResource::make(Team::first()), [], Team::count());
     }
 
-    public function testGroupShow(): void
+    public function testTeamShow(): void
     {
         $this->assertModel('team.show', TeamResource::make(Team::first()), ['team' => Team::first()->id]);
     }
 
-    public function testGroupCreate(): void
+    public function testTeamCreate(): void
     {
         $this->withoutExceptionHandling();
         $requestModel = [
@@ -30,22 +30,22 @@ class TeamControllerTest extends TestCase
         $this->assertPermissionCanCreate('admin', 'team', $requestModel, $requestModel);
     }
 
-    public function testGroupUpdate(): void
+    public function testTeamUpdate(): void
     {
         $this->assertPermissionCanUpdate('admin', 'team', ['name' => 'Updated Team'], Team::latestOne());
     }
 
-    public function testGroupDelete(): void
+    public function testTeamDelete(): void
     {
         $this->assertPermissionCanDelete('admin', 'team', Team::first());
     }
 
-    public function testGroupAttach(): void
+    public function testTeamAttach(): void
     {
-
+        $this->withoutExceptionHandling();
         /** @var Team $team */
         $team = Team::random();
-        $numGroup = $team->workers()->count();
+        $numTeam = $team->workers()->count();
         /** @var Worker $worker */
         $worker = Worker::random();
         $numWorkers = $worker->teams()->count();
@@ -56,14 +56,14 @@ class TeamControllerTest extends TestCase
         $team->refresh();
 
         self::assertEquals($numWorkers + 1, $worker->teams()->count());
-        self::assertEquals($numGroup + 1, $team->workers()->count());
+        self::assertEquals($numTeam + 1, $team->workers()->count());
     }
 
-    public function testGroupDetach(): void
+    public function testTeamDetach(): void
     {
         /** @var Team $team */
         $team = Team::random();
-        $numGroup = $team->workers()->count();
+        $numTeam = $team->workers()->count();
         /** @var Worker $worker */
         $worker = $team->workers()->inRandomOrder()->first();
         $numWorkers = $worker->teams()->count();
@@ -74,6 +74,6 @@ class TeamControllerTest extends TestCase
         $team->refresh();
 
         self::assertEquals($numWorkers - 1, $worker->teams()->count());
-        self::assertEquals($numGroup - 1, $team->workers()->count());
+        self::assertEquals($numTeam - 1, $team->workers()->count());
     }
 }
