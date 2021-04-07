@@ -16,6 +16,7 @@ use Illuminate\Support\Collection;
  * @method static Builder inRandomOrder()
  * @method static Model create(array $validated)
  * @method static Builder where(string $field, mixed $operatorOrEqualsValue, mixed $value = null)
+ * @method static Builder whereNotNull(string $field)
  */
 
 trait ApiResource
