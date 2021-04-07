@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccessController;
 use App\Http\Controllers\AccessRuleController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\JwtAuthController;
@@ -29,6 +30,8 @@ Route::group(['middleware' => 'api'], function ($router){
 
     Route::post('/rule-control', [AccessRuleController::class, 'attach'])->name('rule.attach');
     Route::delete('/rule-control', [AccessRuleController::class, 'detach'])->name('rule.detach');
+
+    Route::put('/access/{device_key}', [AccessController::class, 'enter'])->name('access.enter');
 });
 
 //RESOURCES
