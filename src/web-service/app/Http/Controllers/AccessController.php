@@ -6,6 +6,7 @@ use App\Http\Requests\AccessRequest;
 use App\Models\AccessRule;
 use App\Models\Lock;
 use App\Models\LockGroup;
+use App\Models\Log;
 use App\Models\Team;
 use App\Models\Worker;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,10 +17,12 @@ class AccessController extends Controller
 {
     public function enter(string $lock_fingerPrint, AccessRequest $request){
         //<editor-fold defaultstate="collapsed" desc="Get Models from Request (Lock and Worker)">
+        /** @var Lock $lock */
         $lock = Lock::where('device_key', 'like', $lock_fingerPrint)->first() ?? Lock::find($lock_fingerPrint);
         if(!$lock){
             abort(ResponseCode::HTTP_NOT_FOUND, "Lock not found. Fingerprint was '$lock_fingerPrint'");
         }
+        /** @var Worker $worker */
         $worker = Worker::where('rfid', ($request->validated()['worker_rfid'] ?? ''))->first() ?? Worker::find($request->validated()['worker_id']);
         if(!$worker){
             abort(ResponseCode::HTTP_NOT_FOUND, 'Worker not found.');
@@ -48,13 +51,15 @@ class AccessController extends Controller
         foreach ($commonAccessRules as $rule) {
             /** @var AccessRule $rule */
             if($rule->isAllowing){
-                return response('', ResponseCode::HTTP_ACCEPTED);
+                Log::entry('allow', $worker, $lock, $rule);
+                return response()->json(['action' => 'allow'], ResponseCode::HTTP_ACCEPTED);
             }
         }
         //</editor-fold>
 
         //<editor-fold defaultstate="collapsed" desc="Return LOCKED status, because none of the rules allowed access">
-        return response('', ResponseCode::HTTP_LOCKED);
+        Log::entry('forbid', $worker, $lock);
+        return response()->json(['action' => 'forbid'], ResponseCode::HTTP_LOCKED);
         //</editor-fold>
     }
 }
