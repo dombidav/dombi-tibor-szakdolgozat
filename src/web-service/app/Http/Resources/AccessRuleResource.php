@@ -7,5 +7,4 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class AccessRuleResource extends JsonResource
 {
-
 }

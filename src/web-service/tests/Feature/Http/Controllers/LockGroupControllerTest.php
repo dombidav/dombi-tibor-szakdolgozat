@@ -67,7 +67,9 @@ class LockGroupControllerTest extends TestCase
         $group = LockGroup::random();
         $numGroup = $group->locks()->count();
         /** @var Lock $lock */
-        $lock = $group->locks()->inRandomOrder()->first();
+        do{
+            $lock = $group->locks()->inRandomOrder()->first();
+        }while(!$lock);
         $numLocks = $lock->groups()->count();
         $response = $this->actingAs($this->users['admin'])->delete(route('lock_group.detach'), ['lock_group_id' => $group->id, 'lock_id' => $lock->id], ['Accept' => 'application/json']);
         $response->assertStatus(ResponseCode::HTTP_NO_CONTENT);
