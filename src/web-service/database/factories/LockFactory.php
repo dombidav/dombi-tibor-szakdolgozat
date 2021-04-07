@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Lock;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class LockFactory extends Factory
 {
@@ -23,7 +24,8 @@ class LockFactory extends Factory
     {
         return [
             'name' => $this->faker->name,
-            'status' => $this->faker->numberBetween(0,2)
+            'device_key' => $this->faker->boolean(80) ? Str::random(10) : null,
+            'status' => $this->faker->numberBetween(0,2),
         ];
     }
 }
