@@ -17,6 +17,7 @@ class CreateLockTable extends Migration
             $table->id();
             $table->string('name');
             $table->integer('status')->default(1);
+            $table->string('device_key')->nullable();
             $table->timestamps();
         });
     }

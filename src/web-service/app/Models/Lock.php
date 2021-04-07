@@ -11,7 +11,7 @@ class Lock extends Model
     use HasFactory;
     use ApiResource;
 
-    protected $fillable = ['name', 'status'];
+    protected $fillable = ['name', 'status', 'device_key'];
     protected $appends = ['statusText'];
 
     public function getStatusTextAttribute(){
