@@ -24,7 +24,6 @@ class AccessRuleAttachControllerTest extends TestCase
         $rule->refresh();
 
         $response = $this->actingAs($this->users['admin'])->post(route('rule.attach'), ['lock_group_id' => $group->id, 'access_rule_id' => $rule->id], ['Accept' => 'application/json']);
-        $response->dump();
         $response->assertStatus(ResponseCode::HTTP_NO_CONTENT);
 
         $group->refresh();
@@ -85,7 +84,6 @@ class AccessRuleAttachControllerTest extends TestCase
         $rule->refresh();
 
         $response = $this->actingAs($this->users['admin'])->post(route('rule.attach'), ['team_id' => $team->id, 'access_rule_id' => $rule->id], ['Accept' => 'application/json']);
-        $response->dump();
         $response->assertStatus(ResponseCode::HTTP_NO_CONTENT);
 
         $team->refresh();
