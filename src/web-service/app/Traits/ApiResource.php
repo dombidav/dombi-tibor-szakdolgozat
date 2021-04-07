@@ -4,6 +4,7 @@
 namespace App\Traits;
 
 
+use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -17,6 +18,7 @@ use Illuminate\Support\Collection;
  * @method static Model create(array $validated)
  * @method static Builder where(string $field, mixed $operatorOrEqualsValue, mixed $value = null)
  * @method static Builder whereNotNull(string $field)
+ * @method static Builder whereHas(string $connection, Closure $param)
  */
 
 trait ApiResource
