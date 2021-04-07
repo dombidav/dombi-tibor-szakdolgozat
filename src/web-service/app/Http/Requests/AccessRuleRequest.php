@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\AccessRule;
+use App\Rules\ValidateRuleDefinition;
 
 class AccessRuleRequest extends ApiResourceRequest
 {
@@ -14,7 +15,8 @@ class AccessRuleRequest extends ApiResourceRequest
                 ? []
                 : [
                 'name' => ['required', 'min:3'],
-                //TODO: Complete definition
+                'description' => ['required'],
+                'definition' => [new ValidateRuleDefinition()],
             ];
     }
 

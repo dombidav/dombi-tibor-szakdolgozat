@@ -24,7 +24,7 @@ class AccessRule extends Model
     ];
 
     public function getIsAllowingAttribute(){
-      return AccessRuleProvider::DoesRuleAllows($this->definition);
+      return AccessRuleProvider::DoesRuleAllows($this->definition, $this);
     }
 
     public function getDefinitionAttribute($value)

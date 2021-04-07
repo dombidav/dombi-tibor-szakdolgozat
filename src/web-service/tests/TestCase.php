@@ -50,15 +50,23 @@ abstract class TestCase extends BaseTestCase {
 
     /**
      * @param string $routingTo Route to GET from
-     * @param JsonResource $iShouldGet Expected JSON
+     * @param JsonResource|string $iShouldGet Expected JSON
      * @param array $sending Request Body
      * @param int $resultCountWillBe Count of resulting array if applicable. -1 to ignore.
      */
-    public function assertModel(string $routingTo, JsonResource $iShouldGet, array $sending = [], int $resultCountWillBe = -1): void
+    public function assertModel(string $routingTo, JsonResource|string $iShouldGet, array $sending = [], int $resultCountWillBe = -1): void
     {
         foreach ($this->users as $user) {
             $response = $this->actingAs($user)->getJson(route($routingTo, $sending));
-            $response->assertJsonFragment([$iShouldGet->jsonSerialize()]);
+            if($iShouldGet instanceof JsonResource) {
+                $response->assertJsonFragment([$iShouldGet->jsonSerialize()]);
+            }else{
+                try{
+                    $response->assertJsonFragment(json_decode($iShouldGet, true, 512, JSON_THROW_ON_ERROR));
+                }catch (\JsonException $e){
+                    self::fail($e->getMessage());
+                }
+            }
             if($resultCountWillBe > -1) {
                 self::assertCount($resultCountWillBe, $response->json('data'));
             }
