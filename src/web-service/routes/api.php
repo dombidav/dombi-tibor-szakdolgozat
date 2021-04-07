@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccessController;
 use App\Http\Controllers\AccessRuleController;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\JwtAuthController;
 use App\Http\Controllers\LockController;
@@ -41,3 +42,4 @@ Route::apiResource('lock', LockController::class);
 Route::apiResource('team', TeamController::class);
 Route::apiResource('access_rule', AccessRuleController::class);
 Route::apiResource('lock_group', LockGroupController::class);
+Route::apiResource('log', LogController::class)->except(['store', 'update', 'destroy']);
