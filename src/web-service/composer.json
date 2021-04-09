@@ -10,6 +10,8 @@
     "require": {
         "php": "^8.0",
         "ext-pdo": "*",
+        "asseco-voice/laravel-open-api": "9999999-dev",
+        "doctrine/dbal": "^3.0",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
