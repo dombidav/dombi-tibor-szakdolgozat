@@ -10,6 +10,8 @@
     "require": {
         "php": "^8.0",
         "ext-pdo": "*",
+        "asseco-voice/laravel-open-api": "9999999-dev",
+        "doctrine/dbal": "^3.0",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
@@ -22,13 +24,13 @@
     },
     "require-dev": {
         "andreaselia/laravel-api-to-postman": "^1.7",
-        "roave/security-advisories": "dev-master",
         "facade/ignition": "^2.5",
         "fakerphp/faker": "^1.9.1",
         "laravel/sail": "^1.0.1",
         "mockery/mockery": "^1.4.2",
         "nunomaduro/collision": "^5.0",
-        "phpunit/phpunit": "^9.3.3"
+        "phpunit/phpunit": "^9.3.3",
+        "roave/security-advisories": "dev-master"
     },
     "config": {
         "optimize-autoloader": true,
