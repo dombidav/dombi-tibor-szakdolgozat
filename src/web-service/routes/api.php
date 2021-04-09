@@ -16,7 +16,8 @@ Route::group([
     'middleware' => 'api',
     'prefix' => 'auth'
 ], function ($router) {
-    Route::post('/signup', [JwtAuthController::class, 'register']);
+    /** @deprecated registration is not available. Every user should be added from admin panel */
+    //Route::post('/signup', [JwtAuthController::class, 'register']);
     Route::post('/signin', [JwtAuthController::class, 'login']);
     Route::get('/me', [JwtAuthController::class, 'profile']);
     Route::post('/token-refresh', [JwtAuthController::class, 'refresh']);
