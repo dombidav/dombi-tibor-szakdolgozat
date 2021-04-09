@@ -96,7 +96,7 @@ class JwtAuthController extends Controller
     public function signout(): JsonResponse
     {
         auth()->logout();
-        return response()->json(['message' => 'User loged out']);
+        return response()->json(['message' => 'User logged out']);
     }
 
     /**
@@ -109,7 +109,7 @@ class JwtAuthController extends Controller
     }
 
     /**
-     * User
+     * User profile
      */
     public function profile(): UserResource
     {
