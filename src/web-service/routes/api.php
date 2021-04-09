@@ -24,6 +24,8 @@ Route::group([
     Route::post('/signout', [JwtAuthController::class, 'signout']);
 });
 
+Route::put('/access/{device_key}', [AccessController::class, 'enter'])->name('access.enter');
+
 Route::group(['middleware' => 'auth'],   function ($router){
     //Non-Resource type routes
     Route::group(['middleware' => 'api'], function ($router){
@@ -34,8 +36,6 @@ Route::group(['middleware' => 'auth'],   function ($router){
 
         Route::post('/rule-control', [AccessRuleController::class, 'attach'])->name('rule.attach');
         Route::delete('/rule-control', [AccessRuleController::class, 'detach'])->name('rule.detach');
-
-        Route::put('/access/{device_key}', [AccessController::class, 'enter'])->name('access.enter');
     });
 
 //RESOURCES
