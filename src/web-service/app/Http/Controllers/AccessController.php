@@ -10,12 +10,18 @@ use App\Models\Log;
 use App\Models\Team;
 use App\Models\Worker;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response as ResponseCode;
 
 class AccessController extends Controller
 {
-    public function enter(string $lock_fingerPrint, AccessRequest $request){
+    /**
+     * Lock endpoint: A worker tries to access a lock
+     * @param string $lock_fingerPrint
+     * @param AccessRequest $request
+     * @return JsonResponse
+     */
+    public function enter(string $lock_fingerPrint, AccessRequest $request): JsonResponse{
         //<editor-fold defaultstate="collapsed" desc="Get Models from Request (Lock and Worker)">
         /** @var Lock $lock */
         $lock = Lock::where('device_key', 'like', $lock_fingerPrint)->first() ?? Lock::find($lock_fingerPrint);
