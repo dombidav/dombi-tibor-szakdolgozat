@@ -17,22 +17,42 @@ use Symfony\Component\HttpFoundation\Response as ResponseCode;
 
 class TeamController extends Controller
 {
+    /**
+     * Get all @Team
+     * @return AnonymousResourceCollection
+     */
     public function index(): AnonymousResourceCollection
     {
         return TeamResource::collection(Team::all());
     }
 
-    public function store(TeamRequest $request)
+    /**
+     * Store a @Team
+     * @param TeamRequest $request
+     * @return ResponseFactory|Response
+     */
+    public function store(TeamRequest $request): ResponseFactory|Response
     {
         $team = Team::create($request->validated());
         return response(TeamResource::make($team), ResponseCode::HTTP_CREATED);
     }
 
+    /**
+     * Obtain a specific @Team
+     * @param Team $team
+     * @return TeamResource
+     */
     public function show(Team $team): TeamResource
     {
         return TeamResource::make($team);
     }
 
+    /**
+     * Update a specific @Team
+     * @param TeamUpdateRequest $request
+     * @param Team $team
+     * @return JsonResponse
+     */
     public function update(TeamUpdateRequest $request, Team $team): JsonResponse
     {
         $team->update($request->validated());
@@ -40,11 +60,21 @@ class TeamController extends Controller
         return response()->json('', ResponseCode::HTTP_NO_CONTENT);
     }
 
+    /**
+     * Remove a specific @Team
+     * @param Team $team
+     * @return JsonResponse
+     */
     public function destroy(Team $team): JsonResponse
     {
         return Bouncer::TryDelete(Team::class, $team);
     }
 
+    /**
+     * Add a single @Worker to a @Team
+     * @param WorkerTeamAttachRequest $request
+     * @return JsonResponse
+     */
     public function attach(WorkerTeamAttachRequest $request): JsonResponse{
         $validated = $request->validated();
 
@@ -58,6 +88,11 @@ class TeamController extends Controller
         return response()->json()->setStatusCode(ResponseCode::HTTP_NO_CONTENT);
     }
 
+    /**
+     * Remove a single @Worker from a @Team
+     * @param WorkerTeamAttachRequest $request
+     * @return JsonResponse|object
+     */
     public function detach(WorkerTeamAttachRequest $request){
         $validated = $request->validated();
 
