@@ -5,20 +5,45 @@
 \usepackage{fancyhdr,amsthm,amsmath,amssymb,listings}
 \usepackage{hyperref}
 \usepackage[magyar]{babel}
+\definecolor{dkgreen}{rgb}{0,.6,0}
+\definecolor{dkblue}{rgb}{0,0,.6}
+\definecolor{dkyellow}{cmyk}{0,0,.8,.3}
 \lstset{
 	inputencoding=utf8/latin2,
-	language=Delphi,
-	basicstyle=\footnotesize,
+	language=php,
+	basicstyle=\footnotesize\ttfamily,
 	numbers=left,
 	breaklines,
 	postbreak=\hbox{$\color{red}\hookrightarrow\ $},
 	xleftmargin=2cm,
 	xrightmargin=2cm,
-	backgroundcolor=\color{gray!30},
+	backgroundcolor=\color{gray!10},
 	frame=tlbr,
 	framesep=3pt,
 	keywordstyle=\bfseries\color{blue},
-	commentstyle=\itshape\color{teal}
+	commentstyle=\itshape\color{teal},
+	stringstyle= \color{red},
+	identifierstyle=\color{dkgreen},
+	emph=[1]{php},
+	emphstyle=[1]\color{black},
+	emph=[2]{if,and,or,else},
+	emphstyle=[2]\color{dkyellow},
+	showstringspaces=false,
+	keywords ={__halt_compiler, abstract, and, array,
+		as, break, callable, case, catch, class,
+		clone, const, continue, declare, default,
+		die, do, echo, else, elseif,
+		empty, enddeclare, endfor, endforeach, endif,
+		endswitch, endwhile, eval, exit, extends,
+		final, finally, for, foreach, function,
+		global, goto, if, implements, include,
+		include_once, instanceof, insteadof,
+		interface, isset, list, namespace,
+		new, or, print, private, protected, public,
+		require, require_once, return, static,
+		switch, throw, trait, try, unset, use, var,
+		while, xor, yield,
+	}
 }
 \theoremstyle{definition}
 \newtheorem{definicio}{Definíció}[chapter]
@@ -46,16 +71,124 @@
 	
 	A piacon számtalan hasonló rendszert találni, de ezek mind rendkívül komplexek és költségesek, többnyire csak a szolgáltató szerelői tudják beszerelni és üzemben tartani, valamint alig-, vagy egyáltalán nem szabhatók személyre. A célom az volt, hogy a projekt megoldást kínáljon ezekre a problémákra. Itt megjegyezném, hogy a dolgozat csak a webservice-al foglalkozik, a hardveres feladatokkal nem, viszont biztosít egy általános interfészt, amihez bármilyen hardver komponenst csatolhatunk.
 	
-	A technológia kiválasztásánál az volt a célom, hogy minél általánosabb, és minél könnyebben hozzáférhető legyen. Az online elérés megvalósítására számtalan módszer van, de a legegyszerűbb, ha eleve az egész rendszer egy szerveren fut, és valamilyen webtechnológiával van megvalósítva. Ez magában hordozza azt az előnyt is, hogy így a program bármilyen platformról elérhető. Bár a PHP népszerűsége sokat zuhant az elmúlt években\footnote{Forrás: \url{https://octoverse.github.com/}}, még mindig az egyik legdominánsabb nyelv, ha szerver oldali programozásról van szó\footnote{Forrás: \url{https://w3techs.com/technologies/details/pl-php}}, így erre esett a választásom. 
+	A technológia kiválasztásánál az volt a célom, hogy minél általánosabb, és minél könnyebben hozzáférhető legyen. Az online elérés megvalósítására számtalan módszer van, de a legegyszerűbb, ha eleve az egész rendszer egy szerveren fut, és valamilyen webtechnológiával van megvalósítva. Ez magában hordozza azt az előnyt is, hogy így a program bármilyen platformról elérhető. Bár a PHP népszerűsége sokat zuhant az elmúlt években\footnote{Forrás: \url{https://octoverse.github.com/}}, még mindig az egyik legdominánsabb nyelv, ha szerver oldali programozásról van szó\footnote{Forrás: \url{https://w3techs.com/technologies/details/pl-php}}, így erre esett a választásom. Továbbá, a Node.js vagy Go lang alapú technológiákhoz képest jóval egyszerűbb olcsó, vagy kisebb adatforgalom esetén akár ingyenes tárhely szolgáltatót találni.
 	
 	\chapter{Rendszer Bemutatása}\label{ch-SystemIntro}
-		...
+		A rendszer rendkívül moduláris, így könnyen személyreszabható. De általánosítva, csupán egy webservice-ként üzemel, amihez Rest API-on keresztül csatlakozhatunk. Fontos megjegyezni, hogy a projekt nem arra szolgál, hogy programozási tudás nélkül beüzemelhető legyen, de nem is arra, hogy szolgáltatásként nyújtsuk. A projekt célja, hogy egy részletes, átfogó alapot adjon azoknak a fejlesztőknek, akik szeretnék a saját rendszerüket kifejleszteni.
+		
+		\section{Példa üzem}
+		Legyen adott egy vállalkozás, ami szeretné a székhelyéül szolgáló iroda üpületet biztosítani, továbbá nyomonkövetni, hogy a dolgozok mikor érkeznek és mikor távoznak az épületből. A cég eleve mikrokontrollerekkel foglalkozik, így a hardware-es kiépítés nem jelent problémát. Ebben az esetben nyúlhatnak olyan projektekhez, mint a jelen szakdolgozati munka.
+		
+		\emph{\nameref{sc-Installation}} után a program egy egyszerű Rest API szolgáltatás. A kommunikáció JSON formátumban történik. 
+		
+		Az hardware-es megvalósításra javaslat a \ref{ch-Hardware} fejezetben található. Megvalósítástól függetlenül, a zárnak el kell küldenie a Webservice-nek a saját azonosítóját, illetve a dolgozó azonosítóját (ez lehet példáúl az a szám amit egy RFID kártyáról leolvasott). A zárnak azonosítania kell magát. Ennek mikéntjét az \emph{\nameref{sc-auth} (\ref{sc-auth})} fejezetben részlet\-ezem. A webservice az ismert szabályok alapján eldönti, hogy az adott dolgozó ebben az időpontban használhatja-e a zárat, majd a döntésével válaszol a zárnak. Ha telepítettük a napló modult, akkor a döntés naplózásra kerül.
+		
+		Az admin felületen követhetjük, mind a rendszerben történt eseményeket, mind a zárak használatát.
+		
+		\section{Telepítés}\label{sc-Installation}
+		 A projekt letölthető a saját github repository-jából. Az alkalmazás futtatásához szükségünk lesz egy PHP szerverre (nginx, Apache, lighttpd, stb.), illetve egy Laravel által támogatott adatbázis szerverre (MySQL, Postgres, SQLite, vagy SQL Server). Ezek lehetnek a felhőben, vagy egy lokális szerveren. 
+		 
+		 Fontos megjegyezni, hogy ha az alkalmazás privát hálózaton működik, akkor kívülről nem-, vagy csak bonyolult hálózati konfigurációk után érjük azt el. Belső hálózaton természetesen továbbra is működik minden.
+		
+		Amennyiben a példa vállalkozásunk nem tervezi tovább fejleszteni az alkalmazást, csupán használni, akkor a beüzemelés csak a Composer csomagok telepítéséből, majd a használni kívánt funkciókat biztosító modulok telepítéséből áll. Ehhez érdemes a megfelelő Artisan parancsot használni:
+		
+		\begin{Verbatim}
+composer install         # A Composer csomagok telepítéséhez
+php artisan acs:install  # A telepítő varázsló indításához
+		\end{Verbatim}
+		
+		Ez elindítja a mellékelt \nameref{ssc-install-wizard}t. A telepítés végeztével a projekt használatra készen áll. Amennyiben szeretnénk, innen tovább fejleszthetjük.
+		
+		\subsection{Telepítő varázsló}\label{ssc-install-wizard}
+		A \verb|php artisan acs:install| parancssal elindított telepítő program végig vezet minket az alkalmazás konfigurációján.
+		
+		Elsőként arra kell válaszolnunk, hogy tovább szeretnénk-e fejleszteni a projektet, vagy csak használni szeretnénk. Mindkét esetben az alkalmazás alapvető adatainak, majd az adatbázis hozzáférési adatainak megadásával kell kezdjük a konfigurációt.
+		
+		A választott adatbázis szerverünkön létre kell hozzunk egy adatbázist amit majd később használ a rendszer, de ezt nem kell feltöltsük táblákkal, adatokkal, illetve teljesen mindegy milyen karakter kódolást választunk. Ezeket a Laravel migration rendszere fel fogja tölteni nekünk. 
+		
+		A következő kérdés a Git konfiguráció. Itt kiválaszthatjuk, hogy kapcsolódjunk-e egy már meglévő repository-hoz, hozzunk létre egy teljesen újat, vagy akár át is ugorhatjuk ezt a lépést, ha más verzió kezelőt szeretnénk használni, vagy nincs is szükségünk rá. 
+		
+		Amennyiben a fejlesztői módot választottuk telepítés során, úgy további kérdéseket tesz fel nekünk a program. Itt választhatjuk ki, hogy szeretnénk-e CI/CD eszközöket konfigurálni. Ha igen a program végig vezet minket a Github Actions és a Heroku beállításain. (Lásd: \nameref{ssc-CiCd}) Természetesen bármelyik átugorható, ha nincs rá szükségünk. Ha valamilyen más ilyen szolgáltatást szeretnénk használni, akkor érdemes egyszerűen kihagyni ezt a lépést.
+		
+		Ezután következik a modulok kiválasztása. Egyszerűen válasszuk ki azokat a funkciókat, amiket szeretnénk használni, és automatikusan telepítésre kerülnek. Ha egy modul további konfigurációt igényel (pl.: email szolgáltatás) akkor azt a következő lépésben tudjuk konfigurálni.
+		
+		Fejelsztői módban minden modulnál kiválaszthatjuk, hogy hová telepítse az adott modult: A \verb|vendor| mappába, vagy a \verb|project-root| mappába. A \verb|vendor| mappába történő telepítés akkor hasznos, ha egy modulra szükségünk van, de nem szeretnénk tovább fejleszteni vagy módosítani rajta. Ilyenkor egyszerű composer csomagként települ és az eredeti repository-val együtt frissül.\\*
+		Azonban, ha szeretnénk módosítani az adott modulon, akkor válasszuk a \verb|project-root| mappát, mint telepítés helye. Ezek a modulok a projekt fájljaink mellé kerülnek és lehetőségünk van saját csomagként publikálni őket.
+		
+		Végezetül némely szolgáltatás esetén érdemes újra indítani azt (pl. Apache). A programunkat ezután elérjük a beállított címen.
+		
+		\subsection{Tesztelés és CI/CD}\label{ssc-CiCd}	
+		A projekt tartalmazza a PHP Unit csomagot, amivel könnyedén tudunk unit teszteket írni. Tesztjeink többsége azonban magasabb szintű teszt lesz, így ezeket fejtem ki bővebben.
+		
+		Feature teszt írásához örököltessük a teszt osztályunkat a \verb|HttpTest| absztrakt osztálytól. Ekkor elérjük a Laravel beépített Http test funkcióit, illetve további segéd fügvényeket. Ezeknek előnye, hogy a "beszédes" függvényekkel a tesztünk könnyen olvasható lesz.
+		
+\begin{lstlisting}
+<?php
+
+namespace Tests\Feature;
+
+use Tests\HttpTest;
+use Utils\StatusCodes;
+
+class ExampleTest extends HttpTest
+{
+  public function testApiRequest()
+  {
+    $response = $this->actingAs(Admin())
+                     ->postJson(
+                       '/api/user',
+                       ['name' => 'John']
+                     );
+
+    $response->assertStatus(StatusCodes::CREATED)
+             ->assertJson(['created' => true]);
+  }
+}
+\end{lstlisting}
+
+		A Console Test lényegében Feature teszt, ami a saját Artisan parancsainkat hivatott ellenőrizni. Erre nem írtam külön segéd osztályt, a teszt osztályunkat örököltessük a \verb|TestCase| osztálytól (Ez a Laravel beépített teszt facade osztálya). Kiemelnék egy példát a Laravel dokumentációból:
+		
+\begin{lstlisting}[caption={Egy példa Artisan parancs}]
+/** Az Artisan parancs: **/
+Artisan::command('question', function () {
+  $name = $this->ask('What is your name?');
+
+  $language = $this->choice('Which language do you prefer?', [
+    'PHP',
+    'Ruby',
+    'Python',
+  ]);
+
+  $this->line('Your name is '.$name.' and you prefer '.$language.'.');
+});
+\end{lstlisting}
+
+\begin{lstlisting}[caption={A fenti parancs tesztelése}]
+/** Test a console command. **/
+public function test_console_command()
+{
+  $this->artisan('question')
+       ->expectsQuestion('What is your name?', 'Taylor Otwell')
+       ->expectsQuestion('Which language do you prefer?', 'PHP')
+       ->expectsOutput('Your name is Taylor Otwell and you prefer PHP.')
+       ->doesntExpectOutput('Your name is Taylor Otwell and you prefer Ruby.')
+       ->assertExitCode(0);
+}
+\end{lstlisting}
+
+		Végül pedig az adatbázis tesztekhez elérhető egy \verb|DatabaseTest| absztrakt osztály, melynek célja és használata is hasonló, mint az \verb|HttpTest| osztálynak, csupán más függvényeket tesz elérhetővé. Kiemelném, hogy mind az \verb|HttpTest| mind a \verb|DatabaseTest| a Laravel beépített \verb|TestCase| osztályától örököl, tehát a keretrendszer beépített függvényei mindenkor rendelkezésünkre állnak.
+		
+		Azért, hogy a felhasználó minél hamarabb megkapja a programját, illetve, hogy a hibák minél hamarabb kiderüljenek és minél hamarabb orvoslhatók legyenek, a modern programozási feladatok legnagyobb része használ valamilyen Continuous Integration-t és Continuous Development-et biztosító szolgáltatást. Amennyiben nagyobb mértékben szeretnénk tovább fejleszteni a projektet, mindenképpen érdemes elgondolkodnunk ezek használatán.
+		
+		A projekt majdnem teljesen konfigurálva érkezik Github actions (CI) illetve Heroku (CD) számára, így elég a projekt specifikus adatokat megadni (felhasználó nevek, API kulcsok, stb.) és már is használhatóak ezek a technológiák is. Hogy pontosan mit kell beállítanunk, az attól függ, hogy milyen szolgáltatást veszünk igénybe, de a környezeti változókat minden esetben fel kell vinnünk (Adatbázis hozzáférés, levelező szerver hozzáférés, stb.).
+		
 	\chapter{API kommunikáció}
 		...
 		\section{Rest}
 			...
 		\section{JWT}
 			...
+		\section{Azonosítás}\label{sc-auth}
 	\chapter{Rest Service}
 		...
 		\section{Laravelről}
@@ -70,12 +203,10 @@
 			...
 		
 	\chapter{Admin Service}
-		...
-		\section{Angular}
-			...
-		\section{NG Prime}
-			...
-	\chapter{Adminisztrátori felület}
+		A beléptetőrendszer menedzselését célszerű egy admin felületen megtenni. Az alkalmazás alapból nem rendelkezik semmilyen felülettel, csak az API-on keresztül kommunikálhatunk vele. A szakdolgozatban mellékeltem egy Angular alapú Adminisztrátori felületet, mely teljesen függetlenül, SPA formában működik. Ebből az következik, hogy el lehet helyezni egy független szerveren, de persze futhat ugyan azon a szerveren is, ahol a webservice fut.
+		
+		Az admin felület elsősorban demonstráció miatt került be, a szakdolgozat továbbra is a webservice-ra fókuszál
+	\chapter{Adminisztrátori felület}\label{ch-Admin}
 		\section{Kezdőlap}
 			...
 		\section{Profil műveletek}
@@ -86,7 +217,7 @@
 			...
 		\section{Szabályok felvitele}
 			...
-	\chapter{Hardveres megvalósítási javaslat}
+	\chapter{Hardveres megvalósítási javaslat}\label{ch-Hardware}
 		\section{Eszközök}
 			...
 		\section{Szoftver}
