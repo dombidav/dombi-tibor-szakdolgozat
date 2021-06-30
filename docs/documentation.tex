@@ -273,13 +273,21 @@ Response body:
 \end{lstlisting}
 
 			\subsection{POST}
-				Ezzel a metódussal új erőforrást hozhatunk létre. Ehhez a kérésünk törzsében meg kell adnunk minden szükséges tulajdonságot, illetve az opcionális tulajdonságokat vagy megadjuk, vagy nem. Ezen tulajdonságok sorrendje tetszőleges. Kiemelném, hogy a kérésünk törzsében lehet egy JSON objektum vagy egy tömb, ami több objektumot is tartalmazhat. Ha ez utóbbi áll elő, akkor a webservice felveszi nekünk az összes rekordot. Ez a felvétel tranzakció szerűen működik, tehát ha bármelyik adatfelvitel sikertelen, akkor az összes visszavonásra kerül. Természetesen ehhez a művelethez elég az erőforrást azonosítanunk, nem szükséges egy konkrét rekord azonosítóját megadni az URI-ben. Ha az adatfelvitel sikeres a szerver 201-es státuszkóddal válaszol
+				Ezzel a metódussal új erőforrást hozhatunk létre. Ehhez a kérésünk törzsében meg kell adnunk minden szükséges tulajdonságot, illetve az opcionális tulajdonságokat vagy megadjuk, vagy nem. Ezen tulajdonságok sorrendje tetszőleges. Kiemelném, hogy a kérésünk törzsében lehet egy JSON objektum vagy egy tömb, ami több objektumot is tartalmazhat. Ha ez utóbbi áll elő, akkor a webservice felveszi nekünk az összes rekordot. Ez a felvétel tranzakció szerűen működik, tehát ha bármelyik adatfelvitel sikertelen, akkor az összes visszavonásra kerül. Természetesen ehhez a művelethez elég az erőforrást azonosítanunk, nem szükséges egy konkrét rekord azonosítóját megadni az URI-ben. Ha az adatfelvitel sikeres a szerver 201-es státuszkóddal válaszol. Ez a Laravel-ben a \verb|store()| függvény.
 				
+			\subsection{PUT és PATCH}
+				Ez a két metódus nagyon hasonló egymáshoz, azonban van két nagyon fontos különbség: A PUT metódust használva az általunk megadott adatok \emph{felülírják} azt a rekordot, amit az URI-ben azonosítottunk. Ez azt jelenti, hogy ha részleges adatot küldünk, akkor csak ezek tárolódnak le, minden más elveszik. A PATCH ehhez képest kifejezetten részleges adatot vár, és csak a kapott tulajdonságokat módosítja. 
+				
+				A másik különbség abban van, hogy hogyan kezelik azt az esetet, amikor nem létezik a rekord, amit el szeretnénk érni: A PUT ilyenkor egyszerűen létrehozza azt, a PATCH viszont hibát ad 404-es státuszkóddal.
+				
+				A Laravel alap beállításai alapján nem tesz különbséget a PUT és a PATCH között, de ezt megváltoztathatjuk. Mivel gyakorlatban többnyire csak a PATCH metódus lesz használva, csak ezt implementáltam, és megtartottam a Laravel alap beállítását. Tehát mind a két metódus az \verb|update()| függvényt éri el.
+				
+			\subsection{DELETE}
+				Laravelben ez a \verb|destory()| függvény. A metódus neve elárulja a funkcióját is. Ezt a végpontot elérve, a webservice eltávolítja a URI-ben azonosított rekordot, majd a válaszban visszaküldi a kliensnek az eltávolított rekord részleteit, mint a \verb|show()| függvény, azonban ez a rekord már nem szerepel az adatbázisban.
+		
+		\section{Azonosítás és Hozzáférés szabályozás}\label{sc-auth}
 			
-		\section{JWT}
-			...
-		\section{Azonosítás}\label{sc-auth}
-			...
+			
 	\chapter{Rest Service}
 		...
 		\section{Laravelről}
