@@ -185,8 +185,10 @@ public function test_console_command()
 	\chapter{API kommunikáció}
 		A webservice egy RESTful API-t biztosít, hogy a saját eszközeink könnyedén tudjanak kommunikálni vele. Az erőforrásaink ebben az esetben a \emph{zárak}, \emph{dolgozók}, \emph{ezek csoportjai}, valamint a \emph{szabályok}. Ezekre a Bread műveleteket (\ref{sc-bread}) (Browse, Read, Edit, Add, Delete) úgy tudjuk alkalmazni, hogy az API megfelelő végpontjait érjük el, megfelelő HTTP metódussal (GET, POST, PUT/PATCH, DELETE).
 		
+		Az összes végpont, és azok válaszainak a leírását egy swagger fájlban megadtam, és a szakdolgozathoz csatoltam, így ezeket itt nem fejtem ki.
+		
 		\section{BREAD vagy CRUD műveletek}\label{sc-bread}
-			Amikor az erőforrásokkal végezhető műveletekről beszélünk gyakran használjuk a CRUD vagy BREAD mozaikszavakat. A CRUD a \emph{Create, Read, Update, Delete} szavak rövidítése. Gyakran használják mivel közvetlenül megfeleltethető mind az SQL nyelv metódusainak, mind az HTTP metódusainak
+			Amikor az erőforrásokkal végezhető műveletekről beszélünk gyakran használjuk a CRUD vagy BREAD mozaikszavakat. A CRUD a \emph{Create, Read, Update, Delete} szavak rövidítése. Gyakran használják mivel közvetlenül megfeleltethető mind az SQL nyelv metódusainak, mind az HTTP metódusainak:
 			
 			\begin{table}[h!]
 				\centering
@@ -199,9 +201,28 @@ public function test_console_command()
 					DELETE & DELETE & DELETE \\ \hline
 				\end{tabular}
 				\caption{HTTP, SQL, és CRUD műveletek megfeleltetése}
-				\label{table:1}
+				\label{table:http-sql-crud}
 			\end{table}
 		
+			Viszonylag újabb megközelítés, a BREAD (Browse, Read, Edit, Add, Delete). Ez lényegében megegyezik a CRUD metódusokkal, annyi különbséggel, hogy a BREAD külön veszi azt a metódust, amikor minden erőforrásra kíváncsiak vagyunk (Indexelés), illetve azt a metódust amikor csak egy erőforrás részleteire vagyunk kíváncsiak. Ez azért előnyösebb a számomra, mert ezek jobban megfeleltethetők a Laravel Controller metódusainak. Ha ezeket is meg szeretnénk feletetni egymással, akkor a táblázatunk a következőre módosul:
+	
+			\begin{table}[h!]
+				\centering
+				\begin{tabular}{|c|c|c|c|c|}
+					\hline
+					\textbf{SQL} & \textbf{CRUD} & \textbf{HTTP} & \textbf{BREAD} &\textbf{Laravel Controller} \\ \hline
+					SELECT & READ & GET & BROWSE & INDEX \\ \hline
+					SELECT & READ & GET & READ & SHOW \\ \hline
+					UPDATE & UPDATE & PUT / PATCH & EDIT & UPDATE \\ \hline
+					INSERT & CREATE & POST & ADD & STORE \\ \hline
+					DELETE & DELETE & DELETE & DELETE & DESTROY \\ \hline
+				\end{tabular}
+				\caption{HTTP, SQL, CRUD műveletek a BREAD-hez képest}
+				\label{table:http-sql-crud-bread}
+			\end{table}	
+		
+
+			
 		\section{JWT}
 			...
 		\section{Azonosítás}\label{sc-auth}
