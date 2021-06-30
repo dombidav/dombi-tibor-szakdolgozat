@@ -221,7 +221,60 @@ public function test_console_command()
 				\label{table:http-sql-crud-bread}
 			\end{table}	
 		
+		\section{HTTP metódusok}
+			Az HTTP szabvány úgynevezett metódusokat (hivatalosan \emph{methods}, de szokás \emph{verb}-ként is hivatkozni rájuk) definiál nekünk, hogy ezzel közöljük a szerverrel, hogy mi a szándékunk az URI-ben megnevezett erőforrással. Vegyük példáúl a \verb|worker| erőforrást. Ebben az esetben az implementált metódusok:
+		
+			\subsection{GET}
+				Ezen HTTP metódussal két funkció is elérhető. Ha nem definiáljuk hogy pontosan melyik rekordot (példákban: melyik dolgozót) szeretnénk részletezni egy erőforráson belül, akkor vissza kapjuk az összes ezen erőforrásban tárolt rekordot (tehát az összes dolgozót). A Laravelben megegyezés szerint ez a függvény az \verb|index()|.
+\begin{lstlisting}[caption={Példa a BROWSE metódusra}][language=json]
+Request:
+ GET www.example.com/worker
+ 
+Response:
+ [
+   {
+     "name": "Shelia Lakin",
+     "created_at": "2021-06-30T12:09:20.478Z",
+     "phone": "938-402-3157 x810",
+     "id": "4b3403665fea6"
+   },
+   {
+     "name": "Whitney McClure",
+     "created_at": "2021-06-18T05:26:38.641Z",
+     "phone": "(765) 538-9079",
+     "id": "4b3407665bcd5"
+   }
+]
+\end{lstlisting}
+				
+				Amennyiben az URI-ben specifikáljuk, hogy melyik rekordot szeretnénk elérni, úgy részletes infókat kapunk arról (tehát egy dolgozó adatait kapjuk vissza). Laravelben ez a \verb|show()| függvény, konvenció szerint.
+\begin{lstlisting}[caption={Példa a READ metódusra}][language=json]
+Request:
+ GET www.example.com/worker/4b3403665fea6
+ 
+Response body:
+ {
+   "name": "Whitney McClure",
+   "created_at": "2021-06-18T05:26:38.641Z",
+   "last_logged_in": "2021-06-30T05:26:38.641Z",
+   "phone": "(765) 538-9079",
+   "id": "4b3407665bcd5",
+   "teams": [
+     {
+       "id": 1,
+       "name": "Team1"
+     },
+     {
+       "id": 2,
+       "name": "Team2"
+     }
+   ]
+ }
+\end{lstlisting}
 
+			\subsection{POST}
+				Ezzel a metódussal új erőforrást hozhatunk létre. Ehhez a kérésünk törzsében meg kell adnunk minden szükséges tulajdonságot, illetve az opcionális tulajdonságokat vagy megadjuk, vagy nem. Ezen tulajdonságok sorrendje tetszőleges. Kiemelném, hogy a kérésünk törzsében lehet egy JSON objektum vagy egy tömb, ami több objektumot is tartalmazhat. Ha ez utóbbi áll elő, akkor a webservice felveszi nekünk az összes rekordot. Ez a felvétel tranzakció szerűen működik, tehát ha bármelyik adatfelvitel sikertelen, akkor az összes visszavonásra kerül. Természetesen ehhez a művelethez elég az erőforrást azonosítanunk, nem szükséges egy konkrét rekord azonosítóját megadni az URI-ben. Ha az adatfelvitel sikeres a szerver 201-es státuszkóddal válaszol
+				
 			
 		\section{JWT}
 			...
