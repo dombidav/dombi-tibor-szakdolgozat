@@ -183,12 +183,29 @@ public function test_console_command()
 		A projekt majdnem teljesen konfigurálva érkezik Github actions (CI) illetve Heroku (CD) számára, így elég a projekt specifikus adatokat megadni (felhasználó nevek, API kulcsok, stb.) és már is használhatóak ezek a technológiák is. Hogy pontosan mit kell beállítanunk, az attól függ, hogy milyen szolgáltatást veszünk igénybe, de a környezeti változókat minden esetben fel kell vinnünk (Adatbázis hozzáférés, levelező szerver hozzáférés, stb.).
 		
 	\chapter{API kommunikáció}
-		...
-		\section{Rest}
-			...
+		A webservice egy RESTful API-t biztosít, hogy a saját eszközeink könnyedén tudjanak kommunikálni vele. Az erőforrásaink ebben az esetben a \emph{zárak}, \emph{dolgozók}, \emph{ezek csoportjai}, valamint a \emph{szabályok}. Ezekre a Bread műveleteket (\ref{sc-bread}) (Browse, Read, Edit, Add, Delete) úgy tudjuk alkalmazni, hogy az API megfelelő végpontjait érjük el, megfelelő HTTP metódussal (GET, POST, PUT/PATCH, DELETE).
+		
+		\section{BREAD vagy CRUD műveletek}\label{sc-bread}
+			Amikor az erőforrásokkal végezhető műveletekről beszélünk gyakran használjuk a CRUD vagy BREAD mozaikszavakat. A CRUD a \emph{Create, Read, Update, Delete} szavak rövidítése. Gyakran használják mivel közvetlenül megfeleltethető mind az SQL nyelv metódusainak, mind az HTTP metódusainak
+			
+			\begin{table}[h!]
+				\centering
+				\begin{tabular}{|c|c|c|}
+					\hline
+					\multicolumn{1}{|c|}{\textbf{SQL}} & \textbf{CRUD} & \textbf{HTTP} \\ \hline
+					INSERT & CREATE & POST \\ \hline
+					SELECT & READ & GET \\ \hline
+					UPDATE & UPDATE & PUT / PATCH \\ \hline
+					DELETE & DELETE & DELETE \\ \hline
+				\end{tabular}
+				\caption{HTTP, SQL, és CRUD műveletek megfeleltetése}
+				\label{table:1}
+			\end{table}
+		
 		\section{JWT}
 			...
 		\section{Azonosítás}\label{sc-auth}
+			...
 	\chapter{Rest Service}
 		...
 		\section{Laravelről}
