@@ -188,7 +188,7 @@ public function test_console_command()
 		Az összes végpont, és azok válaszainak a leírását egy swagger fájlban megadtam, és a szakdolgozathoz csatoltam, így ezeket itt nem fejtem ki.
 		
 		\section{BREAD vagy CRUD műveletek}\label{sc-bread}
-			Amikor az erőforrásokkal végezhető műveletekről beszélünk gyakran használjuk a CRUD vagy BREAD mozaikszavakat. A CRUD a \emph{Create, Read, Update, Delete} szavak rövidítése. Gyakran használják mivel közvetlenül megfeleltethető mind az SQL nyelv metódusainak, mind az HTTP metódusainak:
+			Az erőforrásokkal végezhető műveletekről beszélve gyakran használjuk a CRUD vagy BREAD mozaikszavakat. A CRUD a \emph{Create, Read, Update, Delete} szavak rövidítése. Gyakran használják mivel közvetlenül megfeleltethető mind az SQL nyelv metódusainak, mind az HTTP metódusainak:
 			
 			\begin{table}[h!]
 				\centering
@@ -285,11 +285,39 @@ Response body:
 			\subsection{DELETE}
 				Laravelben ez a \verb|destory()| függvény. A metódus neve elárulja a funkcióját is. Ezt a végpontot elérve, a webservice eltávolítja a URI-ben azonosított rekordot, majd a válaszban visszaküldi a kliensnek az eltávolított rekord részleteit, mint a \verb|show()| függvény, azonban ez a rekord már nem szerepel az adatbázisban.
 		
-		\section{Azonosítás és Hozzáférés szabályozás}\label{sc-auth}
+		\section{Azonosítás}\label{sc-auth}
+			Mint minden webszolgáltatásnál itt is szükséges szabályozni a hozzáférést. Erre a Laravel Sanctum (korábban Airlock) csomagot használtam. Az azonosítás két féle képpen történhet.
 			
+			Az első, az a módszer, amit valószínűleg egy SPA (Single-page application) vagy más adminisztrátori felületet biztosító alkalmazás fog használni. Ez a \textqq{hagyományos} bejelentkezés, amikor a \emph{login} végpontra elküldjük a felhasználónevünk és a jelszavunk. Itt fontos, hogy a bejelentkezés CSRF (Cross-site Request Forgery) védelemmel van ellátva, tehát a kliensnek először egy CSRF Cookie-t kell kérnie a service-tól. Ezt a \verb|/sanctum/csrf-cookie| végponton teheti meg. 
+			
+			Amennyiben az email és jelszó kombinációt rendben találja a szerver, úgy a felhasználónk adataival valamint egy \emph{Credential Cookie}-val válaszol, mivel a \emph{Sanctum} a Laravel alap \emph{login-register} rendszerét használja. A kliens innentől mindig elküldi ezt a cookie-t a kérései mellé. (Böngészőben futó SPA esetén ez automatikusan megtörténik, de egyéb platformok esetén ezt elképzelhető, hogy manuálisan kell kezelni.) Ezután a felhasználónkkal jogosultságunknak megfelelően érhetjük el a webservice funkcióit. 
+			
+		\section{Hozzáférés szabályozás}
+			A jogosultságok kezeléséhez a Bouncer csomagot használtam. Mivel a jogosultságok kiosztásához is szükség van jogosultságra, így a telepítés után automatikusan van egy \emph{Superadmin} felhasználó regisztrálva. Miután  ezt megtettük, érdemes deaktiválni ezt a felhasználót. Minden felhasználó csoportokba osztható, és ezekhez a csoportokhoz rendelhetjük a megfelelő jogosultságokat. Gyakorlatilag minden végponthoz tartozik egy megfelelő jog, de hogy ezeket egyszerűbb legyen kezelni, nem csak végpontokhoz, de modellekhez is rendelhetünk szabályokat. Így például, ha szeretnénk egy csoportot, akik tudják kezelni a dolgozókat, de nem tudják törölni őket, akkor adunk egy \emph{engedélyezés} szabályt ennek a csoportnak, a dolgozó modelre nézve, majd adunk egy \emph{tiltó} szabályt ennek a csoportnak, a \emph{destroy} végpontra vagy a modell törlésére. Gyakorlatban ezt meg tehetjük két külön kéréssel, vagy akár egy olyan kéréssel is, ahol a törzsben egy tömbben adjuk meg mind a két szabályt:
+			
+			\begin{lstlisting}[caption={Példa a jogosultság kezelésre}][language=json]
+POST /authority HTTP/1.1
+Host: www.example.com
+Content-Type: application/json
+Content-Length: length
+
+
+[
+  {
+    "auth_group_id": "c4fe980f-0ad9-48c5-b658-f9fa85973dd9",
+    "on": "Models\Worker",
+    "allow": "*"
+  },
+  {
+    "auth_group_id": "c4fe980f-0ad9-48c5-b658-f9fa85973dd9",
+    "on": "Models\Worker",
+    "restrict": "destroy"
+  }
+]
+			\end{lstlisting}
 			
 	\chapter{Rest Service}
-		...
+
 		\section{Laravelről}
 			...
 			\subsection{Provider-ek}
