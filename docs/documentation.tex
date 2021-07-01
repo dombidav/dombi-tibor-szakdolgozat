@@ -319,8 +319,77 @@ Content-Length: length
 	\chapter{Rest Service}
 
 		\section{Laravelről}
-			...
-			\subsection{Provider-ek}
+			A Laravel alapvetően PHP keretrendszer, azonban napjainkra egy egész ökoszisztéma épült köré a különböző csomagok által. Ezen csomagok döntőtöbbsége, akár csak maga a keretrendszer, teljesen nyílt forráskódú az MIT szoftverlicensz alapján.
+			
+			A Laravel MVC architektúrára épül, és egy alapvetően egy rendkívül expresszív, kényelmes szintaktikát használ. A keretrendszer alapelve, hogy \textqq{ne törődjünk az apróságokkal}. Ez a gyakorlatban azt jelenti, hogy minden olyan feladatot belefoglaltak, amit máskülönben a fejlesztők projektenként újra és újra implementálnának. Innen a szlogenjünk: \textqq{The PHP Framework for Web Artisans} A projekt 2011 óta folyamatosan aktív, jelenleg a 8.x verziószám a legfrissebb, de 2021 szeptemberében tervezik kiadni a 9.x-et. Ez a verzió \emph{LTS (Long-term support)}, tehát a többi verzióhoz képest jóval tovább lesz támogatva.
+			
+			A szakdolgozat írásakor messze a Laravel a legelterjedtem és legnagyobb fejlesztőiközösséggel rendelkező PHP keretrendszer. Itt megjegyezném, hogy bár a WordPress jóval \textqq{nagyobb jelentősségű} ilyen értelemben, de az sokkal inkább egy \emph{CMS (Content Management System)} mint keretrendszer.
+			
+			\subsection{Eloquent}
+				A Laravel beépített ORM (Object-relational mapping) rendszerrel érkezik, ez az \emph{Eloquent} névre hallgat, és lényegében megfelel az \emph{aktív rekord} programtervezési mintának. Az Eloquent az erőforrások tábláit osztályokként ábrázolja, az elérhető statikus metódusok tehát az egész táblára hatnak, míg egy példánya az osztálynak megfelel egy rekordnak a táblán.
+				
+				\pagebreak
+				
+				\begin{lstlisting}
+$user = User::find('test@example.com', 'email'); 
+
+/* 
+SELECT * FROM users 
+         WHERE email = "test@example.com" 
+         LIMIT 1 
+*/
+
+$user->email = 'test2@example.com';
+$user->save();
+
+/*
+UPDATE users SET email = "test2@example.com"
+             WHERE id = "50cb85ae-bdce-4646-a54f-0a8d94c551c4"
+*/
+				\end{lstlisting}
+				
+				Továbbá az Eloquent ad egy absztrakciós szintet az adatbázis fölött, így ha cserélődik az adatbázis motor (példáúl MySQL-ről SQL Server-re), akkor elég az csak a konfigurációban megadni, és az Eloquent automatikusan betölti a megfelelő \emph{driver}-t.
+				
+				Ugyanakkor az eloquent számtalan kritikát kap éppen amiatt, mert az aktív rekord mintára épül. Ez megnehezíti az adatbázis elválasztását a programkódtól a tesztelés alatt.
+				
+				Az eloquent emelett a PHP \textqq{varázsmetódusait} használja, ami problémákat okozhat, ha fejlesztés során megváltozik a tábla struktúrája, például a \emph{users} táblán átnevezzük a \emph{created\_at} mezőt \emph{registered\_at}-re, akkor az alkalmazásunkban mindenhol módosítanunk kell a \texttt{\$user->created\_at} kódot, hogy tükrözze ezt: \texttt{\$user->refistered\_at}. Ez egy nagyobb alkalmazásban igen gyorsan komplikálttá tud válni.
+				
+				A harmadik probléma pedig, hogy az eloquent használata során rendszeresen megszegjük a \emph{legkisebb tudás elvét} például amikor ilyen hívásokat írunk: \texttt{\$user->roles->get()}. 
+				
+				Az első problémára A Database Factory-k (lásd: \ref{sssc-db_factory} fejezet) Seeder-ek (lásd: \ref{sssc-db_seeder} fejezet) használata jelent megoldást (Tehát mockup adatbázist hozunk létre). Emellett a Laravel alapból számtalan segéd funkcióval rendelkezik, így az adatbázis tesztek elvégzése annyira egyszerű, hogy nem érdemes emiatt elvetni az eloquent-et.
+				
+				 A második probléma jóval komplexebb. Először is néhány IDE (például az \emph{IntelliJ PhpStorm}) képes ilyen módosításokat végezni az adatbázison, majd a megfelelő bővítményekkel a teljes kódot képes átnézni és elvégezni a szükséges módosításokat. Természetesen teljes mértékben az IDE-re hagyatkozni, és remélni, hogy mindenhol kijavítja a kódunkat, nem egy jó megoldás. Ha tényleg nagyon komplex az alkalmazásunk, akkor alkalmazhatjuk a \emph{Repository} tervezési mintát. Ez egyben a harmadik problémánkat is megoldaná, azonban a téma jelenleg is nagyon vitatott a Laravel fejlesztők között, mivel az Eloquent alapból ad egy absztrakciót az adatbázis felett, így a Repository pattern-el ténylegesen csak ezt az átnevezési problémát orvosolná nekünk. Ennek ellenére a kódbázisunkat rendkívül megnöveli, illetve jóval kevésbé olvashatóvá válik a kódunk.
+				 
+				 Tekintettel arra, hogy a Laravel alapelve az olvasható és \textqq{elegáns} szintaxis, így én a szakdolgozatomban a Repository minta elhagyása mellett döntöttem.
+			
+			\subsection{Database}
+				\subsubsection{Migration}
+					A Laravel alapból biztosítja nekünk a \emph{Migration}-öket. Ezek lényegében úgy működnek, mint a verzió követő rendszerek, csak az adátbázisra. Minden migration felfogható egy \emph{\textqq{commit}}-nak, amiket \texttt{php artisan migrate} paranccsal tudunk \emph{\textqq{push}}-olni az adatbázisunkba. Egy migration bármilyen DDL műveletet tartalmazhat. SQL esetén ezek a \emph{CREATE (TABLE), ALTER, DROP} műveletek. Minden migration tartalmaz egy \texttt{up()} és \texttt{down()} függvényt. Az \texttt{up()} arra szolgál, hogy végrehajtsa a módosításokat, a \texttt{down()} pedig a visszavonásra.
+					
+					\begin{lstlisting}[caption={Példa migration (create\_workers\_table.php)}]
+class CreateWorkersTable extends Migration {
+
+  public function up(): void {
+    Schema::create('workers', function (Blueprint $table) {
+      $table->uuid('id')->primary();
+      $table->string('name');
+      $table->string('rfid')->nullable();
+      $table->date('birthdate');
+      $table->string('telephone')->nullable();
+      $table->timestamps();
+    });
+  }
+
+  public function down(): void {
+    Schema::dropIfExists('workers');
+  }
+}
+					\end{lstlisting}
+					Egy migration-ben van lehetőségünk több DDL utasítást is kiadni egymás után. Ilyenkor ezek tranzakcióként futnak le (tehát ha egy nem fut le, akkor egyik sem), de fontos megjegyezni, hogy a különböző migration-öket \emph{nem} tranzakcióként kezeli. Itt a rendszernek van egy problémája: Abban az esetben, ha több utasítást adunk ki egy migration-ben, de adatbázisként SQLite-ot szeretnénk használni (ami tesztelésnél elég gyakori), a Laravel így is megpróbálja ezeket tranzakcióként futtatni, azonban az SQLite ezt nem támogatja, így ez a migration nem tud lefutni. Tehát vagy nem használunk SQLite-ot, vagy nem használunk tranzakciókat a migration-öknél. Én ez utóbbit választottam.
+					
+				\subsubsection{Factory}\label{sssc-db_factory}
+				\subsubsection{Seeder}\label{sssc-db_seeder}
+			\subsection{Provider}
 				...
 		\section{Jogosultságok}
 			...
