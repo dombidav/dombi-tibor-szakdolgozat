@@ -385,12 +385,38 @@ class CreateWorkersTable extends Migration {
   }
 }
 					\end{lstlisting}
-					Egy migration-ben van lehetőségünk több DDL utasítást is kiadni egymás után. Ilyenkor ezek tranzakcióként futnak le (tehát ha egy nem fut le, akkor egyik sem), de fontos megjegyezni, hogy a különböző migration-öket \emph{nem} tranzakcióként kezeli. Itt a rendszernek van egy problémája: Abban az esetben, ha több utasítást adunk ki egy migration-ben, de adatbázisként SQLite-ot szeretnénk használni (ami tesztelésnél elég gyakori), a Laravel így is megpróbálja ezeket tranzakcióként futtatni, azonban az SQLite ezt nem támogatja, így ez a migration nem tud lefutni. Tehát vagy nem használunk SQLite-ot, vagy nem használunk tranzakciókat a migration-öknél. Én ez utóbbit választottam.
+					Egy migration-ben van lehetőségünk több DDL utasítást is kiadni egymás után. Ilyenkor ezek tranzakcióként futnak le (tehát ha egy nem fut le, akkor egyik sem), de fontos megjegyezni, hogy a különböző migration-öket \emph{nem} tranzakcióként kezeli. Itt a rendszernek van egy problémája: Abban az esetben, ha több utasítást adunk ki egy migration-ben, de adatbázisként SQLite-ot szeretnénk használni (ami tesztelésnél elég gyakori), a Laravel így is megpróbálja ezeket tranzakcióként futtatni, azonban az SQLite ezt nem támogatja, így egy ilyen migration nem tud lefutni. Tehát vagy nem használunk SQLite-ot, vagy nem használunk tranzakciókat a migration-öknél. Én ez utóbbit választottam.
 					
 				\subsubsection{Factory}\label{sssc-db_factory}
+					A Laravel factory osztályaival könnyedén tudunk generált adatokat létrehozni. Ennek leggyakoribb használata a teszt adatok létrehozása, de akkor is alkalmazható, ha egyszerűen egy modell létrehozásánál nem szeretnénk kitölteni valamelyik tulajdonságát, de üresen sem hagyhatjuk.
+					
+					Itt nagy segítségünkre van a Php\\Faker csomag, ami akár neveket, lakcímeket, és más komplex adatokat is tud generálni nekünk.
+					
+					Egy factory általában egyetlen függvényt tartalmaz, ami egy \textqq{definíciós tömböt} ad vissza. Minden alkalommal, amikor egy model \emph{factory}-jét használljuk, akkor ez a tömb alapján hozza létre a modelt.
+					
+					\begin{lstlisting}[caption={Példa Factory (LockFactory.php)}]
+class LockFactory extends Factory
+{
+  protected $model = Lock::class;
+
+  public function definition(): array {
+    return [
+      'name' => $this->faker->name,
+      'device_key' => $this->faker->boolean(80) 
+                        ? Str::random(10) 
+                        : null,
+      'status' => $this->faker->numberBetween(0,2),
+    ];
+  }
+}
+					\end{lstlisting}
+					
 				\subsubsection{Seeder}\label{sssc-db_seeder}
-			\subsection{Provider}
-				...
+					A Seederek módot biztosítanak arra, hogy gyorsan feltöltsük az adatbázisunkat. Ezt használhatjuk akkor is amikor tesztelésre szeretnénk felkészíteni az adatbázisunkat illetve abban az alkalmazás első inicializációjakor is.
+					
+			\subsection{Moduláris projekt}
+				
+				
 		\section{Jogosultságok}
 			...
 		\section{Erőforrások}
