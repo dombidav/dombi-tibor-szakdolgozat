@@ -13,6 +13,7 @@
 	language=php,
 	basicstyle=\footnotesize\ttfamily,
 	numbers=left,
+	firstnumber=1,
 	breaklines,
 	postbreak=\hbox{$\color{red}\hookrightarrow\ $},
 	xleftmargin=2cm,
@@ -229,6 +230,7 @@ public function test_console_command()
 			\subsection{GET}
 				Ezen HTTP metódussal két funkció is elérhető. Ha nem definiáljuk hogy pontosan melyik rekordot (példákban: melyik dolgozót) szeretnénk részletezni egy erőforráson belül, akkor vissza kapjuk az összes ezen erőforrásban tárolt rekordot (tehát az összes dolgozót). A Laravelben megegyezés szerint ez a függvény az \verb|index()|.
 \begin{lstlisting}[caption={Példa a BROWSE metódusra}][language=json]
+
 Request:
  GET www.example.com/worker
  
@@ -251,6 +253,7 @@ Response:
 				
 				Amennyiben az URI-ben specifikáljuk, hogy melyik rekordot szeretnénk elérni, úgy részletes infókat kapunk arról (tehát egy dolgozó adatait kapjuk vissza). Laravelben ez a \verb|show()| függvény, konvenció szerint.
 \begin{lstlisting}[caption={Példa a READ metódusra}][language=json]
+
 Request:
  GET www.example.com/worker/4b3403665fea6
  
@@ -455,18 +458,96 @@ $isUserAllowed = $user->can('edit-users'); // Igazat ad
 			Amennyiben az alkalmazásunk fejlesztő környezetben fut, néhány további teszt felhasználó is regisztrálásra kerül:
 			\begin{itemize}
 				\item \emph{superadmin@acs.test}: Minden erőforrás művelet engedélyezett a számára.
-				\item \emph{admin1@acs.test}: A felhasználókat és azok jogosultságait kezelheti.
+				\item \emph{admin1@acs.test}: A felhasználókat és azok jogosultságait kezelheti, továbbá olvashatja az adminisztrációs felület naplóját.
 				\item \emph{hr1@acs.test}: A Dolgozókat és azok csoportjait, valamint a belépési szabályokat kezelheti.
-				\item \emph{supervisor1@acs.test}: A zárakat, valamint azok csoportjait kezelheti.
+				\item \emph{supervisor1@acs.test}: A zárakat, valamint azok csoportjait kezelheti, továbbá olvashatja a zárak hozzáférési naplóját.
 				\item \emph{security1@acs.test}: Nem módosíthatja, de megnézheti egy dolgozó általános (nem privát jellegű) adatait, de csak akkor, ha ismeri az azonosítóját. \\
 				Gyakorlatilag arra a célra szolgál, amikor egy biztonsági őr szeretne meggyőződni arról, hogy kit enged be. Az azonosítót például meg tudhatja onnan, hogy a dolgozó RFID kártyáját leolvassa.
 			\end{itemize}
 		
 		\section{Erőforrások}
-			...
+			A projekt erőforrásai lényegében a modellek.
 			
-		\section{Szabályok}
-			...
+			\subsection{User}
+				Azon fehasználók adatit tárolja, akik be tudnak jelentkezni az adminisztrációs felületre. A bejelentkeztetésért és jogosultságkezeléssel foglalkozó szolgáltatások ezzel a modellel dolgoznak. Alapbeállítás szerint egyedi UUID-t használ az adatbázis kulcsának, nem sorszámot, valamint a törlés alapértelmezett viselkedése \textqq{Soft-Delete}, tehát amikor egy felhasználót törlünk, akkor nem kerül ki az adatbázisból, csupán kitöltésre kerül egy \texttt{deleted\_at} mező. A Laravel ezt a legtöbb esetben úgy kezeli, hogy az ilyen rekordokat ignorálja, mintha törölve lennének, ugyan akkor bármikor könnyen visszaállíthatjuk ezeket. Így törlés helyett inkább csak deaktiválásról beszélünk.
+				
+			\subsection{Worker}
+				Azon felhasználók adatait tárolja, akik a zárakat tudják használni. Egyedi UUID-t használ kulcsként, nem sorszámot. Álltalában tartozik hozzájuk valamilyen \textqq{ujjlenyomat} (\texttt{Fingerprint}), ami alapján azonosíthatóak. Ez lehet RFID kártya száma (ez a legvalószínűbb), felhasználónév, jelszó, de akár bináris adat is lehet. Ez utóbbi akkor szükséges, ha az azonosítást valamilyen komplex rendszer végzi, példáúl ujjlenyomat olvasó, de lehet akár retina szkenner is, stb.
+				
+			\subsection{Lock}
+				A zárak adatait tárolja, amiket vezérelni szeretnénk. Itt ismételten található egy ujjlenyomat mező, ezúttal (az ütközések elkerülése végett) \texttt{device\_fingerprint} néven. Ez azért fontos, mert így felvihetjük például az eszközünk MAC címét, beégetett sorozatszámát, vagy bármilyen egyedi, nem módosítható adatot az eszközről, és a webservice ez alapján tudja azonosítani. A zár nem feltétlenül ajtó zárat jelent. Lehet akár egy szoftver is, ami függetlenül működik, és csak bejelentkezéshez használja ezt a rendszert.
+				
+				Minden zárhoz tartozik egy állapot. Ezek sorban:
+				\begin{enumerate}
+					\setcounter{enumi}{-1}
+					\item Zárva (\emph{Locked}): Ez a zár nem enged át senkit.
+					\item Müködésben (\emph{Operational}): Ez a zár csak azokat engedi át, akik valamilyen szabály szerint átmehetnek.
+					\item Nyitva (\emph{Open}): Ez a zár mindenkit átenged, aki azonosítható, de a zár használatát naplózza.
+					\item Ismeretlen (\emph{Unknown}): Ez a zár túl rég óta nem küldött életjelet (\emph{Keep-alive signal}), így a webservice nem tudja ellenőrizni az állapotát.
+				\end{enumerate}
+			
+			\subsection{Group}
+				Mind a Worker, mind pedig a Lock modell csoportokhoz rendelhető az egyszerűbb kezelhetőség érdekében. Köszönhetően a Laravel polimorfikus kapcsolatainak (\texttt{morphTo()} és \texttt{morphToMany()}) nem volt szükség külön-külön modellek létrehozására. A csoportok lényege, hogy amikor egy új zárat üzemelünk be, ne kelljen minden szabályt újra definiálnunk, ha már egyszer egy másik zár esetén megtettük.
+				
+			\subsection{Bouncer táblák}
+				A Bouncer csomag négy modellt és az azokhoz tartozó adatbázis táblákat hozza létre nekünk. Ezek nagymértékben támaszkodnak a már említett polimorfikus kapcsolatokra, így bármilyen jogosultságot (\texttt{ability}-t) hozzá rendelhetünk bármilyen entitáshoz, illetve ezt a jogosultságot adhatjuk akár egy felhasználónak, akár egy jogkörnek (\texttt{role}).
+			
+		\section{Rules}
+			A hozzáférési szabályok mondják meg a programnak, hogy átengedhet-e egy dolgozót egy záron. A szabály \textqq{egyik oldalán} (\texttt{operator}) állhat akár egy vagy több dolgozó, akár egy dolgozó csoport, tehát például nem muszáj két dolgozó miatt egy teljesen új csoportot létrehozni. 
+			
+			A szabály \textqq{másik oldalán} (\texttt{subject}) pedig állhat egy vagy több zár, vagy egy zár csoport is, tehát itt is érvényes az, hogy két zár miatt nem feltétlenül kell új csoportot létrehozni.
+			
+			A szabály definíciója JSON formátumban tárolódik. Maga a szabály lehet megengedő, vagy tiltó is. Továbbá definiálhatunk egy számlálót is, ami azt adja, hogy hányszor alkalmazható még ez a szabály. Ennél a számlálónál a \texttt{0} érték azt jelenti, hogy a szabály deaktiválva van, még a \texttt{-1}, vagy ha nincs jelen, az azt jelenti, hogy bármennyiszer alkalmazható.
+			
+			A szabályoknak két alakja van:
+			\begin{enumerate}
+				\item Speciális (\texttt{Specific})
+				\item Általános (\texttt{Generic})
+			\end{enumerate}
+		
+			\subsection{Speciális hozzáférési szabály}
+				Ez egy olyan szabály, amit egy kifejezett idő intervallumra szeretnénk alkalmazni. Miután az intervallum lejárt a szabály törlődik.
+				
+				\begin{lstlisting}[caption={Egy példa speciális szabály létrehozása}][language=json]
+{
+  "operator_id": "5f1a20f7-368a-453e-b7ad-79b495b086b0",
+  "operator_type": "Worker",
+  "subject_id": "c15ad3b5-9e69-4eb7-9a8b-4bd76316d924",
+  "subject_type": "Group",
+  "count": 1,
+  "definition": {
+                 "from": "2021-06-04 10:00:00",
+                 "to": "2021-06-04 18:00:00",
+                 "allow": true
+                }
+}
+				\end{lstlisting}
+				
+			\subsection{Általános hozzáférési szabály}
+				Minden olyan szabály, ami nem idő intervallumhoz kötöt, vagy rendszeresen ismétlődik. Az \texttt{on\_every} tulajdonsággal definiálhatjuk, hogy mely napokon ismétlődik a szabály. Ezt a jelölést több féle képpen is megtehetjük. Felsorolhatjuk tömbben, hogy a hét hanyadik napjain érvényes a szabály, vagy szövegesen is megadhatjuk. A szöveges megadás jelenleg a következő definíciókat támogatja:
+				\begin{itemize}
+					\item \texttt{*}: Minden nap
+					\item \texttt{weekday}: Minden hétköznap
+					\item \texttt{weekend}: Minden hétvégén
+				\end{itemize}
+				Hogy a hét mely napjait számolja hétköznapnak és hétvégének, az személyre szabható. A \texttt{from} és \texttt{to} mező ekkor opcionális, alap értéke az adott napon \texttt{00:00:00.001} és \texttt{23:59:59.999}.
+				
+				\begin{lstlisting}[caption={Egy példa általános szabály létrehozása}][language=json][firstnumber=1]
+{
+  "operator_id": "5f1a20f7-368a-453e-b7ad-79b495b086b0",
+  "operator_type": "Worker",
+  "subject_id": "c15ad3b5-9e69-4eb7-9a8b-4bd76316d924",
+  "subject_type": "Group",
+  "count": 1,
+  "definition": {
+                  "on_every": "*"
+                  "from": "2021-06-04 10:00:00",
+                  "allow": true
+                }
+}
+			\end{lstlisting}
+		
+			Amennyiben a zár nyitási kérelmük mellé egyéb dolgozóval kapcsolatos adatot is csatolunk, úgy ezeket is ellenőrzi a rendszer. Ez például akkor hasznos, ha email cím - jelszó páros véd valamilyen zárat.
 		
 	\chapter{Admin Service}
 		A beléptetőrendszer menedzselését célszerű egy admin felületen megtenni. Az alkalmazás alapból nem rendelkezik semmilyen felülettel, csak az API-on keresztül kommunikálhatunk vele. A szakdolgozatban mellékeltem egy Angular alapú Adminisztrátori felületet, mely teljesen függetlenül, SPA formában működik. Ebből az következik, hogy el lehet helyezni egy független szerveren, de persze futhat ugyan azon a szerveren is, ahol a webservice fut.
