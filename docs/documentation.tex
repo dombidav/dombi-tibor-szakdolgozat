@@ -29,7 +29,9 @@
 	emph=[2]{if,and,or,else},
 	emphstyle=[2]\color{dkyellow},
 	showstringspaces=false,
-	keywords ={__halt_compiler, abstract, and, array,
+	extendedchars=true,
+	literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ö}{{\"o}}1 {ő}{{\H{o}}}1 {ú}{{\'u}}1 {ü}{{\"u}}1 {ű}{{\H{u}}}1,
+	keywords ={\_\_halt\_compiler, abstract, and, array,
 		as, break, callable, case, catch, class,
 		clone, const, continue, declare, default,
 		die, do, echo, else, elseif,
@@ -37,10 +39,10 @@
 		endswitch, endwhile, eval, exit, extends,
 		final, finally, for, foreach, function,
 		global, goto, if, implements, include,
-		include_once, instanceof, insteadof,
+		include\_once, instanceof, insteadof,
 		interface, isset, list, namespace,
 		new, or, print, private, protected, public,
-		require, require_once, return, static,
+		require, require\_once, return, static,
 		switch, throw, trait, try, unset, use, var,
 		while, xor, yield,
 	}
@@ -192,7 +194,7 @@ public function test_console_command()
 			
 			\begin{table}[h!]
 				\centering
-				\begin{tabular}{|c|c|c|}
+				\begin{tabular}{|c | c | c|}
 					\hline
 					\multicolumn{1}{|c|}{\textbf{SQL}} & \textbf{CRUD} & \textbf{HTTP} \\ \hline
 					INSERT & CREATE & POST \\ \hline
@@ -354,7 +356,11 @@ UPDATE users SET email = "test2@example.com"
 				
 				Az eloquent emelett a PHP \textqq{varázsmetódusait} használja, ami problémákat okozhat, ha fejlesztés során megváltozik a tábla struktúrája, például a \emph{users} táblán átnevezzük a \emph{created\_at} mezőt \emph{registered\_at}-re, akkor az alkalmazásunkban mindenhol módosítanunk kell a \texttt{\$user->created\_at} kódot, hogy tükrözze ezt: \texttt{\$user->refistered\_at}. Ez egy nagyobb alkalmazásban igen gyorsan komplikálttá tud válni.
 				
-				A harmadik probléma pedig, hogy az eloquent használata során rendszeresen megszegjük a \emph{legkisebb tudás elvét} például amikor ilyen hívásokat írunk: \texttt{\$user->roles->get()}. 
+				A harmadik probléma pedig, hogy az eloquent használata során rendszeresen megszegjük a \emph{legkisebb tudás elvét} például amikor ilyen hívásokat írunk:
+				\begin{lstlisting}
+$roles = $user->roles->get();  // Ez megszegi a legkisebb tudás elvét
+$roles = $user->getRoles();    // Ez nem szegné meg
+				\end{lstlisting}
 				
 				Az első problémára A Database Factory-k (lásd: \ref{sssc-db_factory} fejezet) Seeder-ek (lásd: \ref{sssc-db_seeder} fejezet) használata jelent megoldást (Tehát mockup adatbázist hozunk létre). Emellett a Laravel alapból számtalan segéd funkcióval rendelkezik, így az adatbázis tesztek elvégzése annyira egyszerű, hogy nem érdemes emiatt elvetni az eloquent-et.
 				
@@ -390,7 +396,7 @@ class CreateWorkersTable extends Migration {
 				\subsubsection{Factory}\label{sssc-db_factory}
 					A Laravel factory osztályaival könnyedén tudunk generált adatokat létrehozni. Ennek leggyakoribb használata a teszt adatok létrehozása, de akkor is alkalmazható, ha egyszerűen egy modell létrehozásánál nem szeretnénk kitölteni valamelyik tulajdonságát, de üresen sem hagyhatjuk.
 					
-					Itt nagy segítségünkre van a Php\\Faker csomag, ami akár neveket, lakcímeket, és más komplex adatokat is tud generálni nekünk.
+					Itt nagy segítségünkre van a PHP\textbackslash{}Faker csomag, ami akár neveket, lakcímeket, és más komplex adatokat is tud generálni nekünk.
 					
 					Egy factory általában egyetlen függvényt tartalmaz, ami egy \textqq{definíciós tömböt} ad vissza. Minden alkalommal, amikor egy model \emph{factory}-jét használljuk, akkor ez a tömb alapján hozza létre a modelt.
 					
@@ -414,13 +420,51 @@ class LockFactory extends Factory
 				\subsubsection{Seeder}\label{sssc-db_seeder}
 					A Seederek módot biztosítanak arra, hogy gyorsan feltöltsük az adatbázisunkat. Ezt használhatjuk akkor is amikor tesztelésre szeretnénk felkészíteni az adatbázisunkat illetve abban az alkalmazás első inicializációjakor is.
 					
-			\subsection{Moduláris projekt}
+			\subsection{Modularitás}
+				A Laravel alap file felépítése egyszerű: \textqq{Az egyforma dolgkokat tegyük egymás mellé}. Így lesznek \emph{Controller}, \emph{Model}, stb. mappáink. Bár ez logikus, és kis projektnél nincs is vele probléma a szakdolgozatom fejlesztése során hamar belefutottam egy olyan problémába, hogy a \emph{Controller} mappám tizennégy fájlt tartalmazott, és a többi mappában sem volt jobb a helyzet. 
 				
-				
+				Ezt orvosolandó áttértem \emph{DDD} (\emph{Domain Driven Design}) fejlesztési mintára (noha nem teljes mélységében alkalmaztam). Az én esetemben ez azt jelentette, hogy az alkalmazást \textqq{Domain}-ekre (vagy nem hivatalosan \textqq{tárgykörökre}) osztottam, majd minden domain-hez saját mappát rendeltem. A mappában csak az adott domain-hez tartozó file-okat helyeztem el (természetesen a domain-en belül is megfelelő mappa szerkezetbe rendezve). Így lett egy \emph{User} mappám, egy \emph{Worker} mappa, stb. Ez sokat segített abban, hogy tudjam hol keressek egy-egy file-t, illetve a \emph{namespace}-ek szeparációja miatt a hibaüzenetek is átláthatóbbak lettek.
+
+				Innen már csak kis lépés volt annak a szerkezetnek a kialakítása amit jelenleg is használok. Hogy kevésbé legyen a rendszer \emph{monolitikus} ezeket a domaineket külön csomagokba rendeztem, illetve a csomagok regisztációját a \emph{Service Provider}-ekre bíztam. Ennek a moduláris szerkezetnek több előnye is van:
+				\begin{itemize}
+					\item A fentebb említett, letisztultabb hiba üzenetek
+					\item Tisztább mappaszerkezet
+					\item A modulok külön-külön fejleszthetők, akár \emph{Open Source} porjektekben is
+					\item A felhasználónak elég csak a neki szükséges modulokat telepítenie
+					\item Minden modul külön definiálja a hozzá szükséges csomagokat (\emph{Dependecies}), így ezek nem keverednek
+					\item Composer-el frissíthetőek a modulok, illetve szükség esetén akár különböző verziók is telepíthetők
+				\end{itemize}			
+			
+				Mint azt fetebb említettem, a modulok kezelését a \emph{Composer} végzi, míg a funkcionalitás regisztrációját a \emph{Service Provider}.
 		\section{Jogosultságok}
-			...
+			A Jogosultságok kezeléséhez számtalan csomag elérhető. Az én választásoma \emph{Bouncer} csomagra esett, első sorban a szintaxisa miatt. Ez a csomag lehetővé teszi, hogy \textqq{szerepeket} hozzunk létre (\emph{role}), és ezekhez, vagy akár közvetlenül a felhasználókhoz is rendelhetünk szabályokat:
+			
+			\begin{lstlisting}[caption={Bouncer használata}]
+$user->assign('admin'); // Ha a role nem létezik, akkor felveszi újként
+			
+Bouncer::allow('admin')->everything();
+Bouncer::forbid('admin')->toManage(User::class); // Megengedi az index(), show(), update(), store(), destroy() metódusokat 
+
+$isUserAllowed = $user->can('edit-users'); // Igazat ad
+			\end{lstlisting}
+			
+			További előnye a Bouncernek, hogy teljesen integrálva van a Laravel alap \emph{Gate} rendszerével, így használható az beépített \emph{Policy} rendszer, illetve más csomagok is képesek használni a Bouncer által definiált jogosultságokat a \emph{Gate}-eken keresztül.
+			
+			A megfelelő \emph{endpoint}-ok használatával az adminisztrátori felületen keresztül is oszthatunk ki jogosultságokat, ugyan akkor ehhez meg kell legyen a megfelelő jogunk (nem oszthat akárki kedvére jogosultságokat). Éppen ezért, a webservice telepítése után lesz regisztrálva egy \emph{Superadmin} felhasználó (\emph{superadmin@acs.test}), akinek mindenhez van jogosultsága (\texttt{Bouncer::allow(\$superadmin)->everything()}). Miután beállítottuk az admin felületet használó \emph{user}-eket, javasolt törölni ezt a Superadmin felhasználót. Mivel a \emph{User} modell alapból \emph{Soft Delete}-et használ, így szükség esetén bármikor visszaállíthatjuk, és megmarad a jogosultsági kör.
+			
+			Amennyiben az alkalmazásunk fejlesztő környezetben fut, néhány további teszt felhasználó is regisztrálásra kerül:
+			\begin{itemize}
+				\item \emph{superadmin@acs.test}: Minden erőforrás művelet engedélyezett a számára.
+				\item \emph{admin1@acs.test}: A felhasználókat és azok jogosultságait kezelheti.
+				\item \emph{hr1@acs.test}: A Dolgozókat és azok csoportjait, valamint a belépési szabályokat kezelheti.
+				\item \emph{supervisor1@acs.test}: A zárakat, valamint azok csoportjait kezelheti.
+				\item \emph{security1@acs.test}: Nem módosíthatja, de megnézheti egy dolgozó általános (nem privát jellegű) adatait, de csak akkor, ha ismeri az azonosítóját. \\
+				Gyakorlatilag arra a célra szolgál, amikor egy biztonsági őr szeretne meggyőződni arról, hogy kit enged be. Az azonosítót például meg tudhatja onnan, hogy a dolgozó RFID kártyáját leolvassa.
+			\end{itemize}
+		
 		\section{Erőforrások}
 			...
+			
 		\section{Szabályok}
 			...
 		
