@@ -330,7 +330,7 @@ Content-Length: length
 			
 			A szakdolgozat írásakor messze a Laravel a legelterjedtem és legnagyobb fejlesztőiközösséggel rendelkező PHP keretrendszer. Itt megjegyezném, hogy bár a WordPress jóval \textqq{nagyobb jelentősségű} ilyen értelemben, de az sokkal inkább egy \emph{CMS (Content Management System)} mint keretrendszer.
 			
-			\subsection{Eloquent}
+			\subsection{Eloquent}\label{sc:eloquent}
 				A Laravel beépített ORM (Object-relational mapping) rendszerrel érkezik, ez az \emph{Eloquent} névre hallgat, és lényegében megfelel az \emph{aktív rekord} programtervezési mintának. Az Eloquent az erőforrások tábláit osztályokként ábrázolja, az elérhető statikus metódusok tehát az egész táblára hatnak, míg egy példánya az osztálynak megfelel egy rekordnak a táblán.
 				
 				\pagebreak
@@ -458,7 +458,7 @@ $isUserAllowed = $user->can('edit-users'); // Igazat ad
 			Amennyiben az alkalmazásunk fejlesztő környezetben fut, néhány további teszt felhasználó is regisztrálásra kerül:
 			\begin{itemize}
 				\item \emph{superadmin@acs.test}: Minden erőforrás művelet engedélyezett a számára.
-				\item \emph{admin1@acs.test}: A felhasználókat és azok jogosultságait kezelheti, továbbá olvashatja az adminisztrációs felület naplóját.
+				\item \emph{admin1@acs.test}: A felhasználókat és azok jogosultságait kezelheti, továbbá olvashatja webservice naplóját (Laravel log).
 				\item \emph{hr1@acs.test}: A Dolgozókat és azok csoportjait, valamint a belépési szabályokat kezelheti.
 				\item \emph{supervisor1@acs.test}: A zárakat, valamint azok csoportjait kezelheti, továbbá olvashatja a zárak hozzáférési naplóját.
 				\item \emph{security1@acs.test}: Nem módosíthatja, de megnézheti egy dolgozó általános (nem privát jellegű) adatait, de csak akkor, ha ismeri az azonosítóját. \\
@@ -593,4 +593,36 @@ X-API-KEY: kLhIlqOvCRcawFlD-tdMBPCHDUGhtuCuO
 			Amennyiben nem szeretnénk minden zárhoz külön-külön mikrokontrollert elhelyezni, elképzelhető az is, hogy egy nagyobb, több csatolakozási lehetőséggel rendelkező vezérlő egységet használunk (például egy Raspberry Pi-t), és ehhez, csillagpontosan hozzákötünk minden zárat és minden leolvasót. 
 			
 			A leolvasásra hasonlóan reagál, mint az elosztott rendszer, de itt a vezérlőnek tudnia kell, hogy melyik leolvasó melyik zárhoz tartozik. Az üzenet URI-jében az adott zár ujjlenyomatát kell használni. Arra nincs szükség, hogy a vezérlő az API kulcsát is ismerje minden egyes zárnak, használhatja minden lekéréshez a saját API kulcsát. 
+			
+	\chapter{Továbbfejlesztási lehetőségek}
+		Természetesen, mint minden szoftver, ez az alkalmazás is rendelkezik hibákkal, hiányosságokkal. Ezeket a jövőben érdemes lenne kijavítani, vagy néhol újra gondolni.
+		
+		\subsubsection*{Bejelentkezés és Regisztráció}
+			A bejelentkezés és a regisztráció során a felhasználó adatai (kiemelten a jelszó) titkosítatlanul kerülnek átadásra, és csak a szerveren kezeltem le. Ezt jó lenne már a kliens oldalon titkossá tenni. Erre megoldást jelenthet a JWT.
+			
+		\subsubsection*{Képek feltöltése}
+			Jelenleg a webservice nem támogatja a képek feltöltését, pedig mind az adminisztrátori felület használóit, mind a dolgozókat könnyebb lenne beazonosítani.
+		
+		\subsubsection*{Modellek}
+			Fentebb már részleteztem az Eloquent problémáit (lásd: \ref{sc:eloquent} - \nameref{sc:eloquent} fejezet), ezt orvosolandó implementálni lehetne a \texttt{repository pattern} irányelveit.
+		
+		\subsubsection*{Rest API helyett GraphQL}
+			Az alkalmazás méreteiből adódóan az alkalmazás messze túl sok végponttal rendelkezik. Ez orvosolható lenne azzal, ha hagyományos Restful API helyett GraphQL-t használna az alkalmazás.
+		
+		\subsubsection*{Adminisztrátori tevékenységek naplózása}
+			Jelenleg csak a zárak használata, valamint a Laravel-el kapcsolatos események kerülnek naplózásra. Érdemes lenne az olyan eseményeket is feljegyezi, mint példáúl, ha valaki új rekordot vitt fel, vagy épp törölt egyet.
+			
+		\subsubsection*{Szabály definíció tisztázása}
+			A mostani struktúrája a hozzáférési szabály definícióknak elég körülményes, és nem evidens. Érdemes lenne új struktúrában gondolkodni.
+			
+		\subsubsection*{Bouncer csomag elvetése}
+			Bár szintaxisa miatt igen kedvelt csomag, sajnos mind teljesítményben, mind korlátoltásga miatt alulmarad a \texttt{Laravel Spatie}-vel szemben. 
+			
+		\subsubsection*{MongoDB támogatás}
+			Habár sem a Laravel, sem a PHP nem támogatja alapból a MongoDB adatbázisokat, a PHP a megfelelő kiegészítővel, a Laravel pedig a megfelelő csomag telepítésével, viszonylag egyszerűen képessé tehető rá. A MongoDB egyre nagyobb népszerűségnek örvend az elmúlt években, így egyáltalán nem elképzelhetetlen, hogy valaki ezt szeretné használni az alkalmazáshoz. Azonban ekkor két probléma merül fel:
+			
+			Az első, hogy a Bouncer egészen egyszerűen nem képes a Mongo környezetben működni.
+			
+			A második, hogy a \texttt{MongoDB-Eloquent} csomag használatához egy teljesen másik absztrakt Model osztálytól kell örököltetnünk a modelljeinket, és a két absztrakt osztálynak nincs közös őse, így nem lehet egyszerűen \textqq{kicserélni} egyiket a másikkal. A legtöbb beépített függvény a Laravelben pedig az eredeti Model típust várja paramétereiben.
+		
 \end{document}
