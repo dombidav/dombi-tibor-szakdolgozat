@@ -565,8 +565,32 @@ $isUserAllowed = $user->can('edit-users'); // Igazat ad
 		\section{Szabályok felvitele}
 			...
 	\chapter{Hardveres megvalósítási javaslat}\label{ch-Hardware}
-		\section{Eszközök}
-			...
-		\section{Szoftver}
-			...
+		Bár a szakdolgozat csak a webservice résszel foglalkozik, mint projekt úgy gondolom fontos javaslatot tenni a hardveres megvalósításra, ha más miatt nem is, legalább azért hogy egy alapot adjon annak, aki ténylegesen szeretné beüzemelni az alkalmazást. Természetesen számtalan módon megoldható az eszközök összekapcsolása, valamint a webservice-al való kommunikáció, ez amit ide írok egy példa csupán.
+		
+		\section{Elosztott rendszerű megoldás}
+			Ebben a példa szituációban minden zárt valamilyen Wi-Fi képes mikrokontroller vezérel. Az \texttt{ESP8266} egy viszonylag olcsó ilyen eszköz. Kössük hozzá a zármechanika motorját, illetve a leolvasónkat, ami legyen példáúl egy RFID leolvasó. Ezután az ESP-nkkel kapcsolódjunk Wi-Fi-n keresztül az internetre. Az ESP rendelkezik egy beégetett gyártási számmal (\texttt{Device ID}), ez lesz az eszközünk ujjlenyomata (Példáúl: \texttt{f84020329c0e}).
+			
+			Amikor egy dolgozó a leolvasóhoz érinti a saját RFID kártyáját, akkor az ESP a kártya azonosítóját olvassa, és nem a dolgozóét, ezért az adatfelvitelkor a kártya azonosítóját kell megadjuk mint a dolgozó ujjlenyomata (példáúl: \texttt{f3949935-5425-4879-b713-bd9f3bd77241}). A leolvasás után az ESP HTTP POST kérést indít a webservice felé, ami így néz ki (API-KEY hitelesítéssel):
+			
+			\begin{lstlisting}[caption={Elosztott rendszer HTTP kérése}]
+POST /api/acs/confirm/f84020329c0e
+Host: www.acs.example.com
+Content-Type: application/json; charset=utf-8
+Content-Length: {LENGTH}
+Accept: application/json
+X-API-KEY: kLhIlqOvCRcawFlD-tdMBPCHDUGhtuCuO
+
+{
+	"worker": {
+	  "fingerprint": "f3949935-5425-4879-b713-bd9f3bd77241"
+	}
+}
+			\end{lstlisting}
+			
+			Figyeljük meg, hogy az eszköz ujjlenyomata az URI-ben kapott helyet. Ezt az ujjlenyomatot nyugodtan kicserélhetjük az eszköz tényleges, adatbázisban használt kulcsára, a hitelesítés akkor is működni fog. Ezután a szerver vagy engedélyezi, vagy valamilyen hiba üzenettel válaszol.
+			
+		\section{Csillagpontos megoldás}
+			Amennyiben nem szeretnénk minden zárhoz külön-külön mikrokontrollert elhelyezni, elképzelhető az is, hogy egy nagyobb, több csatolakozási lehetőséggel rendelkező vezérlő egységet használunk (például egy Raspberry Pi-t), és ehhez, csillagpontosan hozzákötünk minden zárat és minden leolvasót. 
+			
+			A leolvasásra hasonlóan reagál, mint az elosztott rendszer, de itt a vezérlőnek tudnia kell, hogy melyik leolvasó melyik zárhoz tartozik. Az üzenet URI-jében az adott zár ujjlenyomatát kell használni. Arra nincs szükség, hogy a vezérlő az API kulcsát is ismerje minden egyes zárnak, használhatja minden lekéréshez a saját API kulcsát. 
 \end{document}
